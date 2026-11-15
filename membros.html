@@ -41,6 +41,14 @@
       text-shadow: 0 0 6px rgba(141, 255, 106, 0.7), 0 0 14px rgba(141, 255, 106, 0.35);
       letter-spacing: 0.5px;
     }
+    /* fundadores: dourado com coroa */
+    .cargos .fundador {
+      font-weight: 700;
+      color: #ffd54a;
+      text-shadow: 0 0 6px rgba(255, 213, 74, 0.75), 0 0 16px rgba(255, 170, 0, 0.4);
+      letter-spacing: 0.5px;
+    }
+    .cargos .fundador::before { content: "👑 "; text-shadow: none; }
 
     /* ativos: dão uma subidinha quando passa o mouse */
     .ativos .membro { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
@@ -73,7 +81,13 @@
         <img src="images/felipe.webp" alt="">
         <h3>Felipe</h3>
         <div class="arroba">@fekkho</div>
-        <div class="cargos"><span class="pepino">Fundador Pepino</span><span>Fundador Salame</span></div>
+        <div class="cargos"><span class="fundador">Fundador Pepino</span><span>Fundador Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/pedro.webp" alt="">
+        <h3>Pedro</h3>
+        <div class="arroba">@httpspedru</div>
+        <div class="cargos"><span class="fundador">Fundador Pepino</span><span>Fundador Calabresa</span></div>
       </div>
       <div class="item membro">
         <img src="images/breno.webp" alt="">
@@ -92,12 +106,6 @@
         <h3>Luiz</h3>
         <div class="arroba">@luizz1603</div>
         <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/pedro.webp" alt="">
-        <h3>Pedro</h3>
-        <div class="arroba">@httpspedru</div>
-        <div class="cargos"><span class="pepino">Fundador Pepino</span><span>Fundador Calabresa</span></div>
       </div>
       <div class="item membro">
         <img src="images/lulas.png" alt="">
