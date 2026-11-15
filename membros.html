@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Membros · Pepino</title>
+  <link rel="icon" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .categoria {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 48px 0 20px;
+      font-family: var(--fonte-titulo);
+      font-size: 1.05rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--roxo-claro);
+    }
+    .categoria:first-of-type { margin-top: 0; }
+    .categoria::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--roxo), transparent); }
+    .categoria small { font-family: var(--fonte-texto); letter-spacing: 0; text-transform: none; color: var(--texto-fraco); font-size: 0.8rem; }
+
+    .membros { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .membro { align-items: center; padding: 22px 12px 18px; text-align: center; }
+    .membro img {
+      width: 110px; height: 110px; aspect-ratio: 1; border-radius: 50%;
+      object-fit: cover; border: 2px solid var(--roxo); box-shadow: 0 0 18px rgba(160, 32, 240, 0.5);
+      background: #000;
+    }
+    .membro h3 { margin-top: 12px; }
+    .arroba { color: var(--roxo-claro); font-size: 0.8rem; margin-top: 2px; word-break: break-all; }
+    .cargos { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .cargos span { font-size: 0.72rem; color: var(--texto-fraco); }
+    /* cargos do Pepino: verde pepino brilhante */
+    .cargos .pepino {
+      font-weight: 600;
+      color: #8dff6a;
+      text-shadow: 0 0 6px rgba(141, 255, 106, 0.7), 0 0 14px rgba(141, 255, 106, 0.35);
+      letter-spacing: 0.5px;
+    }
+
+    /* ativos: dão uma subidinha quando passa o mouse */
+    .ativos .membro { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .ativos .membro:hover {
+      transform: translateY(-10px);
+      border-color: var(--roxo-claro);
+      box-shadow: 0 12px 30px rgba(160, 32, 240, 0.35);
+    }
+
+    /* ociosos: meio apagados */
+    .ociosos .membro { opacity: 0.7; }
+    .ociosos .membro img { filter: saturate(0.4); border-color: var(--roxo-escuro); box-shadow: none; }
+
+    /* ex-membros: preto e branco */
+    .ex .membro { opacity: 0.5; }
+    .ex .membro img { filter: grayscale(1); border-color: #444; box-shadow: none; }
+
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1 class="titulo">Membros</h1>
+
+    <!-- Para adicionar alguém: copie um bloco <div class="item membro">...</div> inteiro e troque foto, nome, @ e cargos.
+         Para mudar alguém de categoria, recorte o bloco e cole na outra grade. -->
+
+    <h2 class="categoria">Membros ativos</h2>
+    <div class="grade membros ativos">
+      <div class="item membro">
+        <img src="images/felipe.webp" alt="">
+        <h3>Felipe</h3>
+        <div class="arroba">@fekkho</div>
+        <div class="cargos"><span class="pepino">Fundador Pepino</span><span>Fundador Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/breno.webp" alt="">
+        <h3>Breno</h3>
+        <div class="arroba">@brenex5212</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/oleel.png" alt="">
+        <h3>Leo</h3>
+        <div class="arroba">@leothenard</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/luul.png" alt="">
+        <h3>Luiz</h3>
+        <div class="arroba">@luizz1603</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span><span>Membro Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/pedro.webp" alt="">
+        <h3>Pedro</h3>
+        <div class="arroba">@httpspedru</div>
+        <div class="cargos"><span class="pepino">Fundador Pepino</span><span>Fundador Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/lulas.png" alt="">
+        <h3>Lucas</h3>
+        <div class="arroba">@lucasbcc</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/mary.webp" alt="">
+        <h3>Mary</h3>
+        <div class="arroba">@furmelancholy</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/daad.png" alt="">
+        <h3>Daniel</h3>
+        <div class="arroba">@seupaidecalcinha6026</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/rodrigo.webp" alt="">
+        <h3>Rodrigo</h3>
+        <div class="arroba">@rodrekee</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/lucao.webp" alt="">
+        <h3>Lucão</h3>
+        <div class="arroba">@ouhkaes</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span></div>
+      </div>
+    </div>
+
+    <h2 class="categoria">Membros ociosos</h2>
+    <div class="grade membros ociosos">
+      <div class="item membro">
+        <img src="images/gabi.webp" alt="">
+        <h3>Gabi</h3>
+        <div class="arroba">@gabigrc</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/giovanni.webp" alt="">
+        <h3>Giovanni</h3>
+        <div class="arroba">@gisicolin</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
+      </div>
+      <div class="item membro">
+        <img src="images/maria.webp" alt="">
+        <h3>Maria</h3>
+        <div class="arroba">@furyed_</div>
+        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
+      </div>
+    </div>
+
+    <h2 class="categoria">Ex-membros</h2>
+    <div class="grade membros ex">
+      <div class="item membro">
+        <img src="images/bandeco.png" alt="">
+        <h3>Bandeco</h3>
+      </div>
+      <div class="item membro">
+        <img src="images/bandeco.png" alt="">
+        <h3>Fencer</h3>
+      </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
