@@ -95,6 +95,51 @@
     .nome::before { color: #ff2bd6; animation: glitch 3s infinite steps(1); }
     .nome::after  { color: #2bd9ff; animation: glitch 3s 0.15s infinite steps(1) reverse; }
 
+    /* aba de novidades no canto superior esquerdo */
+    .novidades {
+      position: absolute;
+      top: calc(var(--nav-h) + 20px);
+      left: 20px;
+      z-index: 5;
+      width: 220px;
+      display: block;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(10, 0, 20, 0.75);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 24px rgba(160, 32, 240, 0.3);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      animation: entrar-lado 0.8s 0.6s cubic-bezier(.2, .9, .3, 1.2) both;
+    }
+    .novidades:hover { transform: translateY(-4px); border-color: var(--roxo-claro); box-shadow: 0 0 36px rgba(160, 32, 240, 0.6); }
+    .novidades .rotulo {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      font-family: var(--fonte-titulo); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--roxo-claro);
+      border-bottom: 1px solid var(--borda);
+    }
+    .novidades .rotulo::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: #8dff6a; box-shadow: 0 0 8px #8dff6a;
+      animation: piscar 1.4s infinite;
+    }
+    .novidades img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .novidades .txt { display: block; padding: 10px 12px 12px; text-align: center; }
+    .novidades strong { display: block; font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px; }
+    .novidades small { color: var(--texto-fraco); font-size: 0.75rem; }
+    @keyframes entrar-lado { from { opacity: 0; transform: translateX(-30px); } }
+    @keyframes piscar { 50% { opacity: 0.3; } }
+    @media (max-width: 600px) {
+      .novidades { top: calc(var(--nav-h) + 12px); left: 12px; width: 140px; }
+      .novidades .txt { padding: 8px 10px 10px; }
+      .novidades small { display: none; }
+      .novidades strong { font-size: 0.75rem; }
+    }
+
     @keyframes girar { to { transform: rotate(360deg); } }
     @keyframes surgir { from { opacity: 0; transform: scale(0.6); filter: blur(10px); } }
     @keyframes pulo {
@@ -112,6 +157,12 @@
 </head>
 <body>
   <main>
+    <!-- Novidades: troque o link, a imagem e os textos quando tiver um projeto novo -->
+    <a class="novidades" href="pcv3.html">
+      <span class="rotulo">Novidades</span>
+      <img src="images/pepinocraftv3.png" alt="">
+      <span class="txt"><strong>PepinoCraft v3</strong><small>Votação aberta · dez/26 a jan/27</small></span>
+    </a>
     <section class="hero">
       <div class="logo-box" id="logo" title="Clique em mim">
         <span class="anel tres"></span>

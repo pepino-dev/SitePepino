@@ -21,10 +21,10 @@
     }
     .categoria:first-of-type { margin-top: 0; }
     .categoria::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--roxo), transparent); }
-    .categoria small { font-family: var(--fonte-texto); letter-spacing: 0; text-transform: none; color: var(--texto-fraco); font-size: 0.8rem; }
 
     .membros { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-    .membro { align-items: center; padding: 22px 12px 18px; text-align: center; }
+    .membro { align-items: center; padding: 22px 12px 18px; text-align: center; cursor: pointer; position: relative; }
+    .membro .topo { display: flex; flex-direction: column; align-items: center; }
     .membro img {
       width: 110px; height: 110px; aspect-ratio: 1; border-radius: 50%;
       object-fit: cover; border: 2px solid var(--roxo); box-shadow: 0 0 18px rgba(160, 32, 240, 0.5);
@@ -49,9 +49,23 @@
       letter-spacing: 0.5px;
     }
     .cargos .fundador::before { content: "👑 "; text-shadow: none; }
+    /* fundador antigo (Salame/Calabresa): apagado, coroa na mesma cor do texto */
+    .cargos .fundador-antigo::before { content: "👑 "; color: transparent; text-shadow: 0 0 0 var(--texto-fraco); }
+
+    /* Mestre RPG: avermelhado com um brilho leve que pulsa */
+    .cargos .mestre {
+      color: #ff7a7a;
+      font-weight: 600;
+      text-shadow: 0 0 4px rgba(255, 90, 90, 0.45);
+      animation: brilho-mestre 2.6s ease-in-out infinite;
+    }
+    .cargos .mestre::before { content: "🔮 "; }
+    @keyframes brilho-mestre { 50% { text-shadow: 0 0 6px rgba(255, 90, 90, 0.7), 0 0 12px rgba(255, 60, 60, 0.3); } }
+
+    .dica { font-size: 0.65rem; color: var(--roxo-claro); opacity: 0.6; margin-top: 10px; letter-spacing: 1px; text-transform: uppercase; }
 
     /* ativos: dão uma subidinha quando passa o mouse */
-    .ativos .membro { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .membro { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
     .ativos .membro:hover {
       transform: translateY(-10px);
       border-color: var(--roxo-claro);
@@ -66,113 +80,182 @@
     .ex .membro { opacity: 0.5; }
     .ex .membro img { filter: grayscale(1); border-color: #444; box-shadow: none; }
 
+    /* ===== card aberto ===== */
+    .membro .extra { display: none; }
+    .membro .fechar {
+      display: none; position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--roxo-claro);
+      background: transparent; color: var(--roxo-claro); font-size: 1.1rem; cursor: pointer;
+      transition: background 0.25s, color 0.25s;
+    }
+    .membro .fechar:hover { background: var(--roxo); color: #fff; }
+    .membros .membro.aberto, .ativos .membro.aberto:hover {
+      grid-column: 1 / -1;
+      cursor: default;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 28px;
+      align-items: start;
+      text-align: left;
+      padding: 32px;
+      opacity: 1;
+      transform: none;
+      border-color: var(--roxo-claro);
+      box-shadow: 0 0 40px rgba(160, 32, 240, 0.35);
+      animation: abrir-card 0.4s ease;
+    }
+    .membro.aberto .topo img { width: 180px; height: 180px; }
+    .membro.aberto .dica { display: none; }
+    .membro.aberto .fechar { display: block; }
+    .membro.aberto .extra { display: block; animation: abrir-card 0.5s ease; }
+    .extra h4 {
+      font-family: var(--fonte-titulo); font-size: 0.8rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--roxo-claro); margin: 0 0 10px;
+    }
+    .extra .cargos { margin: 0 0 24px; }
+    .extra .cargos span { font-size: 0.9rem; }
+    .extra .descricao { color: var(--texto); line-height: 1.6; margin: 0 0 24px; }
+    .extra .redes { display: flex; flex-wrap: wrap; gap: 10px; }
+    .extra .redes a {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px; border: 1px solid var(--borda);
+      background: rgba(160, 32, 240, 0.12); color: #fff; text-decoration: none; font-size: 0.85rem;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .extra .redes a:hover { background: var(--roxo); border-color: var(--roxo-claro); transform: translateY(-2px); }
+    @keyframes abrir-card { from { opacity: 0; transform: scale(0.96); } }
+    @media (max-width: 600px) {
+      .membros .membro.aberto { grid-template-columns: 1fr; padding: 48px 18px 24px; text-align: center; }
+      .extra .cargos { align-items: center; }
+      .extra .redes { justify-content: center; }
+    }
   </style>
 </head>
 <body>
   <main class="container">
     <h1 class="titulo">Membros</h1>
 
-    <!-- Para adicionar alguém: copie um bloco <div class="item membro">...</div> inteiro e troque foto, nome, @ e cargos.
-         Para mudar alguém de categoria, recorte o bloco e cole na outra grade. -->
-
     <h2 class="categoria">Membros ativos</h2>
-    <div class="grade membros ativos">
-      <div class="item membro">
-        <img src="images/felipe.webp" alt="">
-        <h3>Felipe</h3>
-        <div class="arroba">@fekkho</div>
-        <div class="cargos"><span class="fundador">Fundador Pepino</span><span>Fundador Salame</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/pedro.webp" alt="">
-        <h3>Pedro</h3>
-        <div class="arroba">@httpspedru</div>
-        <div class="cargos"><span class="fundador">Fundador Pepino</span><span>Fundador Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/breno.webp" alt="">
-        <h3>Breno</h3>
-        <div class="arroba">@brenex5212</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/oleel.png" alt="">
-        <h3>Leo</h3>
-        <div class="arroba">@leothenard</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/luul.png" alt="">
-        <h3>Luiz</h3>
-        <div class="arroba">@luizz1603</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/lulas.png" alt="">
-        <h3>Lucas</h3>
-        <div class="arroba">@lucasbcc</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/mary.webp" alt="">
-        <h3>Mary</h3>
-        <div class="arroba">@furmelancholy</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/daad.png" alt="">
-        <h3>Daniel</h3>
-        <div class="arroba">@seupaidecalcinha6026</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/rodrigo.webp" alt="">
-        <h3>Rodrigo</h3>
-        <div class="arroba">@rodrekee</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Calabresa</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/lucao.webp" alt="">
-        <h3>Lucão</h3>
-        <div class="arroba">@ouhkaes</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span></div>
-      </div>
-    </div>
+    <div class="grade membros ativos" id="ativos"></div>
 
     <h2 class="categoria">Membros ociosos</h2>
-    <div class="grade membros ociosos">
-      <div class="item membro">
-        <img src="images/gabi.webp" alt="">
-        <h3>Gabi</h3>
-        <div class="arroba">@gabigrc</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/giovanni.webp" alt="">
-        <h3>Giovanni</h3>
-        <div class="arroba">@gisicolin</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
-      </div>
-      <div class="item membro">
-        <img src="images/maria.webp" alt="">
-        <h3>Maria</h3>
-        <div class="arroba">@furyed_</div>
-        <div class="cargos"><span class="pepino">Membro Pepino</span><span>Membro Salame</span></div>
-      </div>
-    </div>
+    <div class="grade membros ociosos" id="ociosos"></div>
 
     <h2 class="categoria">Ex-membros</h2>
-    <div class="grade membros ex">
-      <div class="item membro">
-        <img src="images/bandeco.png" alt="">
-        <h3>Bandeco</h3>
-      </div>
-      <div class="item membro">
-        <img src="images/bandeco.png" alt="">
-        <h3>Fencer</h3>
-      </div>
-    </div>
+    <div class="grade membros ex" id="ex"></div>
   </main>
+
+  <script>
+    /* ================================================================
+       LISTA DE MEMBROS — é só editar aqui.
+       nome, foto, arroba: o que aparece no card.
+       fundador: true  -> mostra "👑 Fundador Pepino" dourado; senão mostra "Membro Pepino" verde.
+       cargos: aparecem só quando o card abre.
+               Escreva "*" antes pra ficar com a coroa apagada (ex: "*Fundador Salame").
+       descricao: texto que aparece quando o card abre.
+       redes: troque o "#" pelo link. Pra tirar uma rede, apague a linha dela.
+       Pra mudar alguém de categoria, recorte a linha { ... } e cole na outra lista.
+       ================================================================ */
+    const REDES_EXEMPLO = { "📸 Instagram": "#", "🎮 Steam": "#", "📺 Twitch": "#", "▶️ YouTube": "#" };
+
+    const MEMBROS = {
+      ativos: [
+        { nome: "Felipe",  foto: "felipe.webp",  arroba: "@fekkho",        fundador: true, cargos: ["*Fundador Salame"],
+          descricao: "Escreva aqui a descrição do Felipe...", redes: REDES_EXEMPLO },
+        { nome: "Pedro",   foto: "pedro.webp",   arroba: "@httpspedru",    fundador: true, cargos: ["*Fundador Calabresa"],
+          descricao: "Escreva aqui a descrição do Pedro...", redes: REDES_EXEMPLO },
+        { nome: "Breno",   foto: "breno.webp",   arroba: "@brenex5212",    cargos: ["Membro Salame"],
+          descricao: "Escreva aqui a descrição do Breno...", redes: REDES_EXEMPLO },
+        { nome: "Leo",     foto: "oleel.png",    arroba: "@leothenard",    cargos: ["Membro Salame", "Mestre RPG"],
+          descricao: "Escreva aqui a descrição do Leo...", redes: REDES_EXEMPLO },
+        { nome: "Luiz",    foto: "luul.png",     arroba: "@luizz1603",     cargos: ["Membro Salame", "Membro Calabresa", "Mestre RPG"],
+          descricao: "Escreva aqui a descrição do Luiz...", redes: REDES_EXEMPLO },
+        { nome: "Lucas",   foto: "lulas.png",    arroba: "@lucasbcc",      cargos: ["Membro Calabresa"],
+          descricao: "Escreva aqui a descrição do Lucas...", redes: REDES_EXEMPLO },
+        { nome: "Mary",    foto: "mary.webp",    arroba: "@furmelancholy", cargos: ["Membro Calabresa"],
+          descricao: "Escreva aqui a descrição da Mary...", redes: REDES_EXEMPLO },
+        { nome: "Daniel",  foto: "daad.png",     arroba: "@seupaidecalcinha6026", cargos: ["Membro Calabresa"],
+          descricao: "Escreva aqui a descrição do Daniel...", redes: REDES_EXEMPLO },
+        { nome: "Rodrigo", foto: "rodrigo.webp", arroba: "@rodrekee",      cargos: ["Membro Calabresa"],
+          descricao: "Escreva aqui a descrição do Rodrigo...", redes: REDES_EXEMPLO },
+        { nome: "Lucão",   foto: "lucao.webp",   arroba: "@ouhkaes",       cargos: [],
+          descricao: "Escreva aqui a descrição do Lucão...", redes: REDES_EXEMPLO },
+      ],
+      ociosos: [
+        { nome: "Gabi",     foto: "gabi.webp",     arroba: "@gabigrc",   cargos: ["Membro Salame"],
+          descricao: "Escreva aqui a descrição da Gabi...", redes: REDES_EXEMPLO },
+        { nome: "Giovanni", foto: "giovanni.webp", arroba: "@gisicolin", cargos: ["Membro Salame"],
+          descricao: "Escreva aqui a descrição do Giovanni...", redes: REDES_EXEMPLO },
+        { nome: "Maria",    foto: "maria.webp",    arroba: "@furyed_",   cargos: ["Membro Salame", "Mestre RPG"],
+          descricao: "Escreva aqui a descrição da Maria...", redes: REDES_EXEMPLO },
+      ],
+      ex: [
+        { nome: "Bandeco", foto: "bandeco.png", ex: true, cargos: [], descricao: "Escreva aqui a descrição do Bandeco..." },
+        { nome: "Fencer",  foto: "bandeco.png", ex: true, cargos: [], descricao: "Escreva aqui a descrição do Fencer..." },
+      ],
+    };
+
+    /* ---- daqui pra baixo é o código que monta os cards (não precisa mexer) ---- */
+    function esc(t) { return String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+    // cargos com estilo próprio
+    const ESPECIAIS = { "Mestre RPG": "mestre" };
+
+    function cargoHTML(c) {
+      if (ESPECIAIS[c]) return `<span class="${ESPECIAIS[c]}">${esc(c)}</span>`;
+      return c.startsWith("*") ? `<span class="fundador-antigo">${esc(c.slice(1))}</span>` : `<span>${esc(c)}</span>`;
+    }
+
+    function cardHTML(m) {
+      const principal = m.ex ? "" : m.fundador
+        ? `<span class="fundador">Fundador Pepino</span>`
+        : `<span class="pepino">Membro Pepino</span>`;
+      const cargos = (m.cargos || []).length
+        ? `<h4>Outros cargos</h4><div class="cargos">${m.cargos.map(cargoHTML).join("")}</div>` : "";
+      const redes = m.redes && Object.keys(m.redes).length
+        ? `<h4>Redes sociais</h4><div class="redes">${Object.entries(m.redes)
+            .map(([n, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(n)}</a>`).join("")}</div>` : "";
+      return `
+        <div class="item membro" tabindex="0">
+          <button class="fechar" type="button" aria-label="Fechar">×</button>
+          <div class="topo">
+            <img src="images/${esc(m.foto)}" alt="">
+            <h3>${esc(m.nome)}</h3>
+            ${m.arroba ? `<div class="arroba">${esc(m.arroba)}</div>` : ""}
+            ${principal ? `<div class="cargos">${principal}</div>` : ""}
+            <div class="dica">clique para ver mais</div>
+          </div>
+          <div class="extra">
+            ${cargos}
+            ${m.descricao ? `<h4>Descrição</h4><p class="descricao">${esc(m.descricao)}</p>` : ""}
+            ${redes}
+          </div>
+        </div>`;
+    }
+
+    Object.entries(MEMBROS).forEach(([grupo, lista]) => {
+      document.getElementById(grupo).innerHTML = lista.map(cardHTML).join("");
+    });
+
+    // abrir/fechar
+    document.querySelectorAll(".membro").forEach((card) => {
+      function abrir() {
+        if (card.classList.contains("aberto")) return;
+        document.querySelectorAll(".membro.aberto").forEach((c) => c.classList.remove("aberto"));
+        card.classList.add("aberto");
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".fechar")) { card.classList.remove("aberto"); return; }
+        if (e.target.closest("a")) return;
+        abrir();
+      });
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") abrir();
+        if (e.key === "Escape") card.classList.remove("aberto");
+      });
+    });
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
