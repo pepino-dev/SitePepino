@@ -122,6 +122,8 @@
       background: rgba(160, 32, 240, 0.12); color: #fff; text-decoration: none; font-size: 0.85rem;
       transition: background 0.25s, border-color 0.25s, transform 0.25s;
     }
+    .extra .redes a img { width: 20px; height: 20px; object-fit: contain; border: none; border-radius: 0; box-shadow: none; background: none; }
+    .extra .descricao:empty, .extra .redes:empty { min-height: 1.2em; }
     .extra .redes a:hover { background: var(--roxo); border-color: var(--roxo-claro); transform: translateY(-2px); }
     @keyframes abrir-card { from { opacity: 0; transform: scale(0.96); } }
     @media (max-width: 600px) {
@@ -152,46 +154,36 @@
        fundador: true  -> mostra "👑 Fundador Pepino" dourado; senão mostra "Membro Pepino" verde.
        cargos: aparecem só quando o card abre.
                Escreva "*" antes pra ficar com a coroa apagada (ex: "*Fundador Salame").
-       descricao: texto que aparece quando o card abre.
-       redes: troque o "#" pelo link. Pra tirar uma rede, apague a linha dela.
+       descricao: texto que aparece quando o card abre (escreva entre as aspas).
+       redes: lista de botões. Cada um é { nome: "Discord", icone: "disc.png", link: "https://..." }
+              (icone é uma imagem da pasta images; se não tiver, apague a parte icone).
        Pra mudar alguém de categoria, recorte a linha { ... } e cole na outra lista.
        ================================================================ */
-    const REDES_EXEMPLO = { "📸 Instagram": "#", "🎮 Steam": "#", "📺 Twitch": "#", "▶️ YouTube": "#" };
-
     const MEMBROS = {
       ativos: [
         { nome: "Felipe",  foto: "felipe.webp",  arroba: "@fekkho",        fundador: true, cargos: ["*Fundador Salame"],
-          descricao: "Escreva aqui a descrição do Felipe...", redes: REDES_EXEMPLO },
-        { nome: "Pedro",   foto: "pedro.webp",   arroba: "@httpspedru",    fundador: true, cargos: ["*Fundador Calabresa"],
-          descricao: "Escreva aqui a descrição do Pedro...", redes: REDES_EXEMPLO },
-        { nome: "Breno",   foto: "breno.webp",   arroba: "@brenex5212",    cargos: ["Membro Salame"],
-          descricao: "Escreva aqui a descrição do Breno...", redes: REDES_EXEMPLO },
-        { nome: "Leo",     foto: "oleel.png",    arroba: "@leothenard",    cargos: ["Membro Salame", "Mestre RPG"],
-          descricao: "Escreva aqui a descrição do Leo...", redes: REDES_EXEMPLO },
-        { nome: "Luiz",    foto: "luul.png",     arroba: "@luizz1603",     cargos: ["Membro Salame", "Membro Calabresa", "Mestre RPG"],
-          descricao: "Escreva aqui a descrição do Luiz...", redes: REDES_EXEMPLO },
-        { nome: "Lucas",   foto: "lulas.png",    arroba: "@lucasbcc",      cargos: ["Membro Calabresa"],
-          descricao: "Escreva aqui a descrição do Lucas...", redes: REDES_EXEMPLO },
-        { nome: "Mary",    foto: "mary.webp",    arroba: "@furmelancholy", cargos: ["Membro Calabresa"],
-          descricao: "Escreva aqui a descrição da Mary...", redes: REDES_EXEMPLO },
-        { nome: "Daniel",  foto: "daad.png",     arroba: "@seupaidecalcinha6026", cargos: ["Membro Calabresa"],
-          descricao: "Escreva aqui a descrição do Daniel...", redes: REDES_EXEMPLO },
-        { nome: "Rodrigo", foto: "rodrigo.webp", arroba: "@rodrekee",      cargos: ["Membro Calabresa"],
-          descricao: "Escreva aqui a descrição do Rodrigo...", redes: REDES_EXEMPLO },
-        { nome: "Lucão",   foto: "lucao.webp",   arroba: "@ouhkaes",       cargos: [],
-          descricao: "Escreva aqui a descrição do Lucão...", redes: REDES_EXEMPLO },
+          descricao: "eh o feef",
+          redes: [
+            { nome: "Discord", icone: "disc.png", link: "https://discord.com/users/847913524054851665" },
+          ] },
+        { nome: "Pedro",   foto: "pedro.webp",   arroba: "@httpspedru",    fundador: true, cargos: ["*Fundador Calabresa"], descricao: "", redes: [] },
+        { nome: "Breno",   foto: "breno.webp",   arroba: "@brenex5212",    cargos: ["Membro Salame"], descricao: "", redes: [] },
+        { nome: "Leo",     foto: "oleel.png",    arroba: "@leothenard",    cargos: ["Membro Salame", "Mestre RPG"], descricao: "", redes: [] },
+        { nome: "Luiz",    foto: "luul.png",     arroba: "@luizz1603",     cargos: ["Membro Salame", "Membro Calabresa", "Mestre RPG"], descricao: "", redes: [] },
+        { nome: "Lucas",   foto: "lulas.png",    arroba: "@lucasbcc",      cargos: ["Membro Calabresa"], descricao: "", redes: [] },
+        { nome: "Mary",    foto: "mary.webp",    arroba: "@furmelancholy", cargos: ["Membro Calabresa"], descricao: "", redes: [] },
+        { nome: "Daniel",  foto: "daad.png",     arroba: "@seupaidecalcinha6026", cargos: ["Membro Calabresa"], descricao: "", redes: [] },
+        { nome: "Rodrigo", foto: "rodrigo.webp", arroba: "@rodrekee",      cargos: ["Membro Calabresa"], descricao: "", redes: [] },
+        { nome: "Lucão",   foto: "lucao.webp",   arroba: "@ouhkaes",       cargos: [], descricao: "", redes: [] },
       ],
       ociosos: [
-        { nome: "Gabi",     foto: "gabi.webp",     arroba: "@gabigrc",   cargos: ["Membro Salame"],
-          descricao: "Escreva aqui a descrição da Gabi...", redes: REDES_EXEMPLO },
-        { nome: "Giovanni", foto: "giovanni.webp", arroba: "@gisicolin", cargos: ["Membro Salame"],
-          descricao: "Escreva aqui a descrição do Giovanni...", redes: REDES_EXEMPLO },
-        { nome: "Maria",    foto: "maria.webp",    arroba: "@furyed_",   cargos: ["Membro Salame", "Mestre RPG"],
-          descricao: "Escreva aqui a descrição da Maria...", redes: REDES_EXEMPLO },
+        { nome: "Gabi",     foto: "gabi.webp",     arroba: "@gabigrc",   cargos: ["Membro Salame"], descricao: "", redes: [] },
+        { nome: "Giovanni", foto: "giovanni.webp", arroba: "@gisicolin", cargos: ["Membro Salame"], descricao: "", redes: [] },
+        { nome: "Maria",    foto: "maria.webp",    arroba: "@furyed_",   cargos: ["Membro Salame", "Mestre RPG"], descricao: "", redes: [] },
       ],
       ex: [
-        { nome: "Bandeco", foto: "bandeco.png", ex: true, cargos: [], descricao: "Escreva aqui a descrição do Bandeco..." },
-        { nome: "Fencer",  foto: "bandeco.png", ex: true, cargos: [], descricao: "Escreva aqui a descrição do Fencer..." },
+        { nome: "Bandeco", foto: "bandeco.png", ex: true, cargos: [], descricao: "", redes: [] },
+        { nome: "Fencer",  foto: "bandeco.png", ex: true, cargos: [], descricao: "", redes: [] },
       ],
     };
 
@@ -212,9 +204,8 @@
         : `<span class="pepino">Membro Pepino</span>`;
       const cargos = (m.cargos || []).length
         ? `<h4>Outros cargos</h4><div class="cargos">${m.cargos.map(cargoHTML).join("")}</div>` : "";
-      const redes = m.redes && Object.keys(m.redes).length
-        ? `<h4>Redes sociais</h4><div class="redes">${Object.entries(m.redes)
-            .map(([n, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(n)}</a>`).join("")}</div>` : "";
+      const redes = `<h4>Redes sociais</h4><div class="redes">${(m.redes || [])
+            .map((r) => `<a href="${esc(r.link)}" target="_blank" rel="noopener">${r.icone ? `<img src="images/${esc(r.icone)}" alt="">` : ""}${esc(r.nome)}</a>`).join("")}</div>`;
       return `
         <div class="item membro" tabindex="0">
           <button class="fechar" type="button" aria-label="Fechar">×</button>
@@ -227,7 +218,7 @@
           </div>
           <div class="extra">
             ${cargos}
-            ${m.descricao ? `<h4>Descrição</h4><p class="descricao">${esc(m.descricao)}</p>` : ""}
+            <h4>Descrição</h4><p class="descricao">${esc(m.descricao || "")}</p>
             ${redes}
           </div>
         </div>`;
