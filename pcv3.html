@@ -7,18 +7,128 @@
   <link rel="icon" href="images/favicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .descricao-v3 { max-width: 640px; margin: 0 auto; text-align: center; }
+    .descricao-v3 .selo {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px;
+      border: 1px solid #8dff6a; color: #8dff6a;
+      font-family: var(--fonte-titulo); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(141, 255, 106, 0.25);
+    }
+    .descricao-v3 .selo::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: #8dff6a; box-shadow: 0 0 8px #8dff6a; animation: piscar 1.4s infinite;
+    }
+    .descricao-v3 h2 {
+      font-family: var(--fonte-titulo); font-size: clamp(1.1rem, 4vw, 1.5rem);
+      letter-spacing: 2px; margin: 18px 0 10px; color: #fff;
+      text-shadow: 0 0 12px rgba(160, 32, 240, 0.7);
+    }
+    .descricao-v3 p { color: var(--texto); line-height: 1.7; margin: 0 0 8px; }
+    .descricao-v3 .previsto { color: var(--texto-fraco); font-size: 0.85rem; margin-top: 14px; }
+
+    /* contador */
+    .contador-titulo {
+      text-align: center; margin: 32px 0 14px;
+      font-family: var(--fonte-titulo); font-size: 0.8rem; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--roxo-claro);
+    }
+    .contador { display: flex; justify-content: center; gap: clamp(8px, 2.5vw, 18px); flex-wrap: wrap; }
+    .contador .bloco {
+      min-width: clamp(70px, 18vw, 110px);
+      padding: 16px 10px 12px;
+      text-align: center;
+      background: rgba(10, 0, 20, 0.7);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      box-shadow: inset 0 0 20px rgba(160, 32, 240, 0.2), 0 0 20px rgba(160, 32, 240, 0.2);
+    }
+    .contador .num {
+      display: block;
+      font-family: var(--fonte-titulo); font-weight: 900;
+      font-size: clamp(1.8rem, 7vw, 3rem); line-height: 1;
+      color: #fff;
+      text-shadow: 0 0 10px var(--roxo), 0 0 24px var(--roxo);
+      font-variant-numeric: tabular-nums;
+    }
+    .contador .num.tick { animation: tick 0.4s ease; }
+    .contador .rot { display: block; margin-top: 8px; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-fraco); }
+    .contador-fim { text-align: center; color: var(--texto-fraco); font-size: 0.8rem; margin: 12px 0 0; }
+    .encerrada { text-align: center; font-family: var(--fonte-titulo); color: var(--roxo-claro); letter-spacing: 2px; }
+    @keyframes tick { from { transform: translateY(-6px); opacity: 0.4; } }
+    @keyframes piscar { 50% { opacity: 0.3; } }
+  </style>
 </head>
 <body>
   <main class="container">
     <h1 class="titulo">PepinoCraft v3</h1>
-    <img src="images/pepinocraftv3.png" alt="PepinoCraft v3" style="max-height: 38vh; width: auto; border-radius: 14px; border: 1px solid var(--borda); margin: 0 auto 24px;">
-    <div class="cartao centro">
-      <p>Pepinocraft v3 ainda esta em votação, Participe agora !</p>
+
+    <!-- Contador: pra mudar a data, troque o valor de FIM_VOTACAO lá embaixo -->
+    <div id="area-contador">
+      <div class="contador-titulo" style="margin-top: 0;">A votação acaba em</div>
+      <div class="contador">
+        <div class="bloco"><span class="num" id="c-dias">--</span><span class="rot">dias</span></div>
+        <div class="bloco"><span class="num" id="c-horas">--</span><span class="rot">horas</span></div>
+        <div class="bloco"><span class="num" id="c-min">--</span><span class="rot">min</span></div>
+        <div class="bloco"><span class="num" id="c-seg">--</span><span class="rot">seg</span></div>
+      </div>
+      <p class="contador-fim">28/11/2026 às 12h (horário de Brasília)</p>
     </div>
-    <div class="botoes-linha">
+
+    <div class="botoes-linha" id="botao-votar" style="margin-top: 24px;">
       <a class="botao" href="https://forms.gle/6Ws1Kw6asQSCwRWd9" target="_blank" rel="noopener">🗳 Votar agora</a>
     </div>
+
+    <div class="cartao descricao-v3" style="margin-top: 32px;">
+      <span class="selo" id="selo" style="margin-bottom: 14px;">Votação aberta</span>
+      <p>O PepinoCraft v3 ainda está em votação, e é você quem ajuda a decidir como vai ser o servidor.</p>
+      <p>Dê seu voto antes que o tempo acabe! ⛏️</p>
+      <p class="previsto">Previsto para dez/26 a jan/27</p>
+    </div>
+
+    <img src="images/pepinocraftv3.png" alt="PepinoCraft v3" style="max-height: 38vh; width: auto; border-radius: 14px; border: 1px solid var(--borda); margin: 32px auto 0;">
   </main>
   <script src="script.js"></script>
+  <script>
+    // 28/11/2026 12:00 em Brasília (UTC-3)
+    const FIM_VOTACAO = new Date("2026-11-28T12:00:00-03:00");
+
+    const el = {
+      dias: document.getElementById("c-dias"),
+      horas: document.getElementById("c-horas"),
+      min: document.getElementById("c-min"),
+      seg: document.getElementById("c-seg"),
+    };
+    const dois = (n) => String(n).padStart(2, "0");
+
+    function mostrar(chave, valor) {
+      if (el[chave].textContent === valor) return;
+      el[chave].textContent = valor;
+      el[chave].classList.remove("tick");
+      void el[chave].offsetWidth;
+      el[chave].classList.add("tick");
+    }
+
+    function atualizar() {
+      let falta = Math.floor((FIM_VOTACAO - Date.now()) / 1000);
+      if (falta <= 0) {
+        clearInterval(timer);
+        document.getElementById("area-contador").innerHTML =
+          '<p class="encerrada">🔒 A votação foi encerrada</p><p class="contador-fim">Acabou em 28/11/2026 às 12h (horário de Brasília)</p>';
+        document.getElementById("botao-votar").style.display = "none";
+        const selo = document.getElementById("selo");
+        selo.textContent = "Votação encerrada";
+        selo.style.cssText = "border-color: var(--texto-fraco); color: var(--texto-fraco); box-shadow: none;";
+        return;
+      }
+      mostrar("dias", String(Math.floor(falta / 86400)));
+      mostrar("horas", dois(Math.floor((falta % 86400) / 3600)));
+      mostrar("min", dois(Math.floor((falta % 3600) / 60)));
+      mostrar("seg", dois(falta % 60));
+    }
+    const timer = setInterval(atualizar, 1000);
+    atualizar();
+  </script>
 </body>
 </html>

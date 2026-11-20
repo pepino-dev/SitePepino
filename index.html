@@ -130,13 +130,21 @@
     .novidades img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .novidades .txt { display: block; padding: 10px 12px 12px; text-align: center; }
     .novidades strong { display: block; font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px; }
-    .novidades small { color: var(--texto-fraco); font-size: 0.75rem; }
+    .novidades small { display: block; color: var(--texto-fraco); font-size: 0.75rem; }
+    .novidades .mini-timer {
+      display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 8px;
+      font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px;
+      font-variant-numeric: tabular-nums; color: #fff;
+      background: rgba(160, 32, 240, 0.2); border: 1px solid var(--borda);
+      text-shadow: 0 0 8px var(--roxo);
+    }
+    .novidades.encerrada .rotulo::before { background: var(--texto-fraco); box-shadow: none; animation: none; }
     @keyframes entrar-lado { from { opacity: 0; transform: translateX(-30px); } }
     @keyframes piscar { 50% { opacity: 0.3; } }
     @media (max-width: 600px) {
       .novidades { top: calc(var(--nav-h) + 12px); left: 12px; width: 140px; }
       .novidades .txt { padding: 8px 10px 10px; }
-      .novidades small { display: none; }
+      .novidades .mini-timer { font-size: 0.7rem; padding: 3px 6px; }
       .novidades strong { font-size: 0.75rem; }
     }
 
@@ -161,7 +169,7 @@
     <a class="novidades" href="pcv3.html">
       <span class="rotulo">Novidades</span>
       <img src="images/pepinocraftv3.png" alt="">
-      <span class="txt"><strong>PepinoCraft v3</strong><small>Votação aberta · dez/26 a jan/27</small></span>
+      <span class="txt"><strong>PepinoCraft v3</strong><small id="nov-status">Votação aberta</small><span class="mini-timer" id="nov-timer">--d --:--:--</span></span>
     </a>
     <section class="hero">
       <div class="logo-box" id="logo" title="Clique em mim">
@@ -184,6 +192,25 @@
       const y = (e.clientY / innerHeight - 0.5) * -30;
       logo.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
     });
+    // contador da aba Novidades (mesma data da página do PepinoCraft v3)
+    const FIM_VOTACAO = new Date("2026-11-28T12:00:00-03:00");
+    const novTimer = document.getElementById("nov-timer");
+    function atualizarNovidades() {
+      const falta = Math.floor((FIM_VOTACAO - Date.now()) / 1000);
+      if (falta <= 0) {
+        clearInterval(timerNov);
+        document.getElementById("nov-status").textContent = "Votação encerrada";
+        novTimer.textContent = "dez/26 a jan/27";
+        document.querySelector(".novidades").classList.add("encerrada");
+        return;
+      }
+      const d = Math.floor(falta / 86400), h = Math.floor((falta % 86400) / 3600),
+            m = Math.floor((falta % 3600) / 60), s = falta % 60, z = (n) => String(n).padStart(2, "0");
+      novTimer.textContent = `${d}d ${z(h)}:${z(m)}:${z(s)}`;
+    }
+    const timerNov = setInterval(atualizarNovidades, 1000);
+    atualizarNovidades();
+
     // clicar no pinguim faz ele pular
     logo.addEventListener("click", () => {
       logo.classList.remove("pulo");
