@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Área de membros · Pepino</title>
+  <link rel="icon" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .caixa { max-width: 420px; margin: 0 auto; text-align: center; }
+    .caixa .cadeado { font-size: 2.6rem; margin-bottom: 8px; }
+    .caixa p.sub { color: var(--texto-fraco); margin-bottom: 24px; }
+    .form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+    .form label { font-family: var(--fonte-titulo); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--roxo-claro); }
+    .campo { position: relative; display: block; }
+    .campo .arroba-fixa { position: absolute; left: 14px; top: calc(50% + 3px); transform: translateY(-50%); color: var(--roxo-claro); font-size: 1rem; text-transform: none; letter-spacing: 0; pointer-events: none; }
+    .form input {
+      width: 100%; margin-top: 6px; padding: 12px 14px;
+      background: rgba(10, 0, 20, 0.8); color: #fff;
+      border: 1px solid var(--borda); border-radius: 10px;
+      font: inherit; font-size: 1rem;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .form #usuario { padding-left: 32px; }
+    .form input:focus { outline: none; border-color: var(--roxo-claro); box-shadow: 0 0 14px rgba(160, 32, 240, 0.5); }
+    .form .botao { justify-content: center; margin-top: 6px; border: 1px solid var(--roxo-claro); }
+    .erro { min-height: 1.4em; color: #ff7a7a; font-size: 0.85rem; text-align: center; }
+    .tremer { animation: tremer 0.4s; }
+    @keyframes tremer { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+    /* em obras */
+    .obras { text-align: center; }
+    .obras .ola { font-family: var(--fonte-titulo); font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 20px; }
+    .obras .ola b { color: var(--roxo-claro); }
+    .faixa {
+      height: 18px; border-radius: 6px; margin: 0 auto 28px; max-width: 520px;
+      background: repeating-linear-gradient(-45deg, #ffd54a 0 18px, #111 18px 36px);
+      background-size: 51px 100%;
+      animation: faixa 1.2s linear infinite;
+      box-shadow: 0 0 18px rgba(255, 213, 74, 0.35);
+    }
+    @keyframes faixa { to { background-position: 51px 0; } }
+    .obras { position: relative; }
+    .obras .gif-obras { width: 150px; height: auto; margin: 0 auto; image-rendering: auto; }
+    /* Rory "supervisionando" a obra no canto do card */
+    .obras .rory {
+      position: absolute; left: 8%; top: 130px;
+      height: 190px; width: auto;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+      transform-origin: bottom center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* easter egg: clicou, ele dá uma "amassadinha" e toca o áudio */
+    .obras .rory.falando { animation: rory-clique 0.35s ease; }
+    @keyframes rory-clique { 40% { transform: scale(1.08, 0.92); } }
+    @media (max-width: 700px) {
+      .obras .rory { position: static; display: block; height: 130px; margin: 20px auto -8px; }
+    }
+    .obras h2 { font-family: var(--fonte-titulo); font-size: clamp(1.3rem, 4vw, 1.8rem); letter-spacing: 3px; margin: 12px 0 10px; color: #fff; text-shadow: 0 0 14px rgba(160, 32, 240, 0.7); }
+    .obras p { color: var(--texto-fraco); }
+    .obras .botao { margin-top: 28px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1 class="titulo">Área de membros</h1>
+
+    <!-- tela de login -->
+    <section id="tela-login" class="cartao caixa" hidden>
+      <div class="cadeado">🔒</div>
+      <p class="sub">Só pra quem é do Pepino. Entre com seu @ do Discord.</p>
+      <form class="form" id="form-login" autocomplete="off">
+        <label>Seu @
+          <span class="campo"><span class="arroba-fixa">@</span><input id="usuario" type="text" required autocapitalize="none" spellcheck="false"></span>
+        </label>
+        <label>Senha
+          <input id="senha" type="password" placeholder="••••" required>
+        </label>
+        <div class="erro" id="erro"></div>
+        <button class="botao" type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- depois de entrar: em obras (troque o conteúdo daqui quando decidir o que vai ter) -->
+    <section id="tela-membro" class="cartao obras" hidden>
+      <p class="ola">Bem-vindo, <b id="nome-membro"></b>!</p>
+      <div class="faixa"></div>
+      <img class="gif-obras" src="images/obraspeng.gif" alt="Pinguim trabalhando na obra">
+      <h2>Em obras</h2>
+      <p>Essa área ainda está sendo construída. Volte em breve!</p>
+      <button class="botao" id="sair" type="button">Sair</button>
+      <img class="rory" id="rory" src="images/rory.webp" alt="Rory">
+      <audio id="audio-rory" src="audio/makitao.mp3" preload="none"></audio>
+    </section>
+  </main>
+  <script src="script.js"></script>
+  <script>
+    const telaLogin = document.getElementById("tela-login");
+    const telaMembro = document.getElementById("tela-membro");
+
+    function mostrar() {
+      const quem = usuarioLogado();
+      telaLogin.hidden = !!quem;
+      telaMembro.hidden = !quem;
+      if (quem) {
+        document.getElementById("nome-membro").textContent = "@" + quem;
+        recolherLateral(); // logado: a barra lateral já abre recolhida
+      }
+    }
+
+    async function hash(texto) {
+      const dados = new TextEncoder().encode(texto);
+      const h = await crypto.subtle.digest("SHA-256", dados);
+      return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    document.getElementById("form-login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const erro = document.getElementById("erro");
+      const usuario = document.getElementById("usuario").value.trim().replace(/^@/, "").toLowerCase();
+      const senha = document.getElementById("senha").value;
+      let mensagem = "";
+      if (LOGIN_EX.includes(usuario)) mensagem = "Você não pode entrar aqui.";
+      else if (LOGIN_OCIOSOS.includes(usuario)) mensagem = "Atualmente você não está autorizado a entrar aqui.";
+      else if (!LOGIN_ATIVOS.includes(usuario)) mensagem = "Esse usuário não faz parte dos membros do Pepino.";
+      else if ((await hash(senha)) !== LOGIN_SENHA_HASH) mensagem = "Senha incorreta.";
+      if (mensagem) {
+        erro.textContent = mensagem;
+        telaLogin.classList.remove("tremer"); void telaLogin.offsetWidth; telaLogin.classList.add("tremer");
+        return;
+      }
+      try { localStorage.setItem("pepino-membro", usuario); } catch (err) {}
+      location.reload(); // recarrega pra atualizar o botão do cabeçalho
+    });
+
+    document.getElementById("sair").addEventListener("click", () => {
+      try { localStorage.removeItem("pepino-membro"); } catch (err) {}
+      location.reload();
+    });
+
+    // easter egg: clicar no Rory toca o áudio (clicar de novo recomeça)
+    const rory = document.getElementById("rory");
+    const audioRory = document.getElementById("audio-rory");
+    rory.addEventListener("click", () => {
+      audioRory.currentTime = 0;
+      audioRory.play().catch(() => {});
+      rory.classList.remove("falando"); void rory.offsetWidth; rory.classList.add("falando");
+    });
+
+    mostrar();
+  </script>
+</body>
+</html>

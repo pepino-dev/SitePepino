@@ -12,14 +12,13 @@
   <style>
     /* ===== estilos só da página inicial ===== */
     .hero {
-      min-height: calc(100vh - var(--nav-h));
-      min-height: calc(100svh - var(--nav-h));
+      min-height: 60vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 28px;
-      padding: 40px 16px;
+      padding: 48px 16px 40px;
       text-align: center;
       perspective: 900px;
     }
@@ -95,57 +94,71 @@
     .nome::before { color: #ff2bd6; animation: glitch 3s infinite steps(1); }
     .nome::after  { color: #2bd9ff; animation: glitch 3s 0.15s infinite steps(1) reverse; }
 
-    /* aba de novidades no canto superior esquerdo */
-    .novidades {
-      position: absolute;
-      top: calc(var(--nav-h) + 20px);
-      left: 20px;
-      z-index: 5;
-      width: 220px;
-      display: block;
-      text-decoration: none;
-      color: #fff;
-      background: rgba(10, 0, 20, 0.75);
-      border: 1px solid var(--borda);
-      border-radius: 14px;
-      overflow: hidden;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 24px rgba(160, 32, 240, 0.3);
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      animation: entrar-lado 0.8s 0.6s cubic-bezier(.2, .9, .3, 1.2) both;
+    /* tela larga: pinguim do lado do nome */
+    @media (min-width: 1250px) {
+      .hero { flex-direction: row; gap: clamp(40px, 4vw, 80px); }
+      .logo-box { width: clamp(170px, 13vw, 240px); }
+      .nome { font-size: clamp(4rem, 6.5vw, 8rem); }
     }
-    .novidades:hover { transform: translateY(-4px); border-color: var(--roxo-claro); box-shadow: 0 0 36px rgba(160, 32, 240, 0.6); }
-    .novidades .rotulo {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px;
-      font-family: var(--fonte-titulo); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--roxo-claro);
-      border-bottom: 1px solid var(--borda);
+
+    /* ===== divisória "Acontecendo agora" ===== */
+    .agora { max-width: 1000px; margin: 0 auto; padding: 0 20px 64px; }
+    .divisoria {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 24px;
+      font-family: var(--fonte-titulo); font-size: 0.95rem; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--roxo-claro); white-space: nowrap;
     }
-    .novidades .rotulo::before {
-      content: ""; width: 8px; height: 8px; border-radius: 50%;
-      background: #8dff6a; box-shadow: 0 0 8px #8dff6a;
-      animation: piscar 1.4s infinite;
+    .divisoria::before, .divisoria::after { content: ""; flex: 1; height: 1px; }
+    .divisoria::before { background: linear-gradient(90deg, transparent, var(--roxo)); }
+    .divisoria::after { background: linear-gradient(90deg, var(--roxo), transparent); }
+    .divisoria .ao-vivo {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #8dff6a; box-shadow: 0 0 10px #8dff6a; animation: piscar 1.4s infinite;
     }
-    .novidades img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-    .novidades .txt { display: block; padding: 10px 12px 12px; text-align: center; }
-    .novidades strong { display: block; font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px; }
-    .novidades small { display: block; color: var(--texto-fraco); font-size: 0.75rem; }
-    .novidades .mini-timer {
-      display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 8px;
-      font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px;
-      font-variant-numeric: tabular-nums; color: #fff;
-      background: rgba(160, 32, 240, 0.2); border: 1px solid var(--borda);
-      text-shadow: 0 0 8px var(--roxo);
-    }
-    .novidades.encerrada .rotulo::before { background: var(--texto-fraco); box-shadow: none; animation: none; }
-    @keyframes entrar-lado { from { opacity: 0; transform: translateX(-30px); } }
     @keyframes piscar { 50% { opacity: 0.3; } }
-    @media (max-width: 600px) {
-      .novidades { top: calc(var(--nav-h) + 12px); left: 12px; width: 140px; }
-      .novidades .txt { padding: 8px 10px 10px; }
-      .novidades .mini-timer { font-size: 0.7rem; padding: 3px 6px; }
-      .novidades strong { font-size: 0.75rem; }
+
+    .eventos { display: grid; gap: 20px; }
+    .evento {
+      display: grid; grid-template-columns: 1.1fr 1fr;
+      background: rgba(10, 0, 20, 0.75);
+      border: 1px solid var(--borda); border-radius: 18px; overflow: hidden;
+      box-shadow: 0 0 30px rgba(160, 32, 240, 0.2);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .evento:hover { border-color: var(--roxo-claro); box-shadow: 0 0 40px rgba(160, 32, 240, 0.45); transform: translateY(-4px); }
+    .evento .capa { display: block; overflow: hidden; }
+    .evento .capa img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16 / 9; transition: transform 0.5s; }
+    .evento:hover .capa img { transform: scale(1.05); }
+    .evento .info { padding: 24px; display: flex; flex-direction: column; justify-content: center; gap: 10px; text-align: center; align-items: center; }
+    .evento .selo {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid #8dff6a; color: #8dff6a;
+      font-family: var(--fonte-titulo); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+    }
+    .evento .selo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8dff6a; box-shadow: 0 0 8px #8dff6a; animation: piscar 1.4s infinite; }
+    .evento.encerrado .selo { border-color: var(--texto-fraco); color: var(--texto-fraco); }
+    .evento.encerrado .selo::before { background: var(--texto-fraco); box-shadow: none; animation: none; }
+    .evento h3 { font-family: var(--fonte-titulo); font-size: 1.4rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 12px rgba(160, 32, 240, 0.7); }
+    .evento h3 a { color: inherit; text-decoration: none; }
+    .evento small { color: var(--texto-fraco); }
+    .mini-contador { display: flex; gap: 8px; margin: 4px 0; }
+    .mini-contador div {
+      min-width: 58px; padding: 8px 6px 6px; border-radius: 10px;
+      background: rgba(160, 32, 240, 0.15); border: 1px solid var(--borda);
+    }
+    .mini-contador b {
+      display: block; font-family: var(--fonte-titulo); font-size: 1.4rem; line-height: 1; color: #fff;
+      text-shadow: 0 0 10px var(--roxo); font-variant-numeric: tabular-nums;
+    }
+    .mini-contador span { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-fraco); }
+    .evento .acoes { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+    .evento .acoes .botao { padding: 8px 16px; font-size: 0.75rem; }
+    .botao.vazado { background: transparent; }
+    @media (max-width: 700px) {
+      .evento { grid-template-columns: 1fr; }
+      .evento .info { padding: 18px; }
+      .mini-contador div { min-width: 52px; }
     }
 
     @keyframes girar { to { transform: rotate(360deg); } }
@@ -165,12 +178,6 @@
 </head>
 <body>
   <main>
-    <!-- Novidades: troque o link, a imagem e os textos quando tiver um projeto novo -->
-    <a class="novidades" href="pcv3.html">
-      <span class="rotulo">Novidades</span>
-      <img src="images/pepinocraftv3.png" alt="">
-      <span class="txt"><strong>PepinoCraft v3</strong><small id="nov-status">Votação aberta</small><span class="mini-timer" id="nov-timer">--d --:--:--</span></span>
-    </a>
     <section class="hero">
       <div class="logo-box" id="logo" title="Clique em mim">
         <span class="anel tres"></span>
@@ -180,6 +187,32 @@
         <img src="images/favicon.png" alt="Logo do Pepino">
       </div>
       <h1 class="nome" data-texto="PEPINO">PEPINO</h1>
+    </section>
+
+    <!-- Acontecendo agora: pra adicionar outro evento, copie o bloco <article class="evento">...</article> -->
+    <section class="agora">
+      <h2 class="divisoria"><span class="ao-vivo"></span>Acontecendo agora</h2>
+      <div class="eventos">
+        <article class="evento" id="evento-pcv3">
+          <a class="capa" href="pcv3.html"><img src="images/pepinocraftv3.png" alt="PepinoCraft v3"></a>
+          <div class="info">
+            <span class="selo" id="pcv3-status">Votação aberta</span>
+            <h3><a href="pcv3.html">PepinoCraft v3</a></h3>
+            <small id="pcv3-sub">A votação acaba em</small>
+            <div class="mini-contador" id="pcv3-timer">
+              <div><b id="t-d">--</b><span>dias</span></div>
+              <div><b id="t-h">--</b><span>horas</span></div>
+              <div><b id="t-m">--</b><span>min</span></div>
+              <div><b id="t-s">--</b><span>seg</span></div>
+            </div>
+            <small>Previsto para dez/26 a jan/27</small>
+            <div class="acoes">
+              <a class="botao" id="pcv3-votar" href="https://forms.gle/6Ws1Kw6asQSCwRWd9" target="_blank" rel="noopener">🗳 Votar</a>
+              <a class="botao vazado" href="pcv3.html">Ver projeto</a>
+            </div>
+          </div>
+        </article>
+      </div>
     </section>
   </main>
 
@@ -192,24 +225,27 @@
       const y = (e.clientY / innerHeight - 0.5) * -30;
       logo.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
     });
-    // contador da aba Novidades (mesma data da página do PepinoCraft v3)
+    // contador do PepinoCraft v3 em "Acontecendo agora" (mesma data da página do projeto)
     const FIM_VOTACAO = new Date("2026-11-28T12:00:00-03:00");
-    const novTimer = document.getElementById("nov-timer");
-    function atualizarNovidades() {
+    function atualizarEvento() {
       const falta = Math.floor((FIM_VOTACAO - Date.now()) / 1000);
       if (falta <= 0) {
-        clearInterval(timerNov);
-        document.getElementById("nov-status").textContent = "Votação encerrada";
-        novTimer.textContent = "dez/26 a jan/27";
-        document.querySelector(".novidades").classList.add("encerrada");
+        clearInterval(timerEvento);
+        document.getElementById("evento-pcv3").classList.add("encerrado");
+        document.getElementById("pcv3-status").textContent = "Votação encerrada";
+        document.getElementById("pcv3-sub").style.display = "none";
+        document.getElementById("pcv3-timer").style.display = "none";
+        document.getElementById("pcv3-votar").style.display = "none";
         return;
       }
-      const d = Math.floor(falta / 86400), h = Math.floor((falta % 86400) / 3600),
-            m = Math.floor((falta % 3600) / 60), s = falta % 60, z = (n) => String(n).padStart(2, "0");
-      novTimer.textContent = `${d}d ${z(h)}:${z(m)}:${z(s)}`;
+      const z = (n) => String(n).padStart(2, "0");
+      document.getElementById("t-d").textContent = Math.floor(falta / 86400);
+      document.getElementById("t-h").textContent = z(Math.floor((falta % 86400) / 3600));
+      document.getElementById("t-m").textContent = z(Math.floor((falta % 3600) / 60));
+      document.getElementById("t-s").textContent = z(falta % 60);
     }
-    const timerNov = setInterval(atualizarNovidades, 1000);
-    atualizarNovidades();
+    const timerEvento = setInterval(atualizarEvento, 1000);
+    atualizarEvento();
 
     // clicar no pinguim faz ele pular
     logo.addEventListener("click", () => {

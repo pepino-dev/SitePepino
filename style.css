@@ -61,11 +61,11 @@ body::before {
   top: 0;
   z-index: 50;
   height: var(--nav-h);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* botão ☰ | logo no centro | vazio */
   align-items: center;
-  justify-content: center;
-  gap: 28px;
-  padding: 0 24px;
+  gap: 16px;
+  padding: 0 16px;
   background: rgba(5, 0, 8, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -84,7 +84,22 @@ body::before {
 }
 .nav-marca img { width: 32px; height: 32px; object-fit: contain; }
 
-.nav-botoes { display: flex; gap: 10px; align-items: center; }
+/* botão ☰ que abre/recolhe a barra lateral */
+.botao-lateral {
+  justify-self: start;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--texto);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.botao-lateral:hover, .botao-lateral:focus-visible {
+  background: rgba(160, 32, 240, 0.2); border-color: var(--borda); box-shadow: var(--brilho); outline: none;
+}
 
 .botao {
   display: inline-flex;
@@ -110,139 +125,138 @@ body::before {
 }
 .botao .seta { transition: transform 0.3s; font-size: 0.7rem; }
 
-/* gaveta (menu que abre) */
-.gaveta-wrap { position: relative; }
+/* ================= BARRA LATERAL (estilo YouTube/Discord) ================= */
+:root { --lat-w: 232px; --lat-mini: 76px; }
 
-.gaveta {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  --x: -50%;
-  min-width: 260px;
-  padding: 12px;
+.lateral {
+  position: fixed;
+  top: var(--nav-h);
+  bottom: 0;
+  left: 0;
+  z-index: 45;
+  width: var(--lat-w);
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  /* borda neon animada: fundo escuro por dentro, degradê que corre na borda */
-  border: 2px solid transparent;
-  border-radius: 16px;
-  background:
-    linear-gradient(160deg, rgba(30, 8, 50, 0.97), rgba(8, 2, 14, 0.98)) padding-box,
-    linear-gradient(90deg, var(--roxo), #ff2bd6, var(--roxo-claro), #2bd9ff, var(--roxo)) border-box;
-  background-size: 100% 100%, 300% 100%;
-  animation: borda-neon 4s linear infinite;
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.7),
-    0 0 25px rgba(160, 32, 240, 0.55),
-    0 0 60px rgba(255, 43, 214, 0.2);
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(var(--x), -10px) scaleY(0.95);
-  transform-origin: top;
-  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+  gap: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: rgba(8, 2, 14, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid var(--borda);
+  transition: width 0.3s, transform 0.3s;
 }
-/* ponte invisível pra gaveta não fechar no caminho do mouse */
-.gaveta::before {
-  content: "";
-  position: absolute;
-  top: -12px;
-  left: 0;
-  right: 0;
-  height: 12px;
-}
-
-.gaveta-wrap.aberta .gaveta {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(var(--x), 0);
-}
-.gaveta-wrap.aberta .seta { transform: rotate(180deg); }
-
-@media (hover: hover) {
-  .gaveta-wrap:hover .gaveta { opacity: 1; visibility: visible; transform: translate(var(--x), 0); }
-  .gaveta-wrap:hover .seta { transform: rotate(180deg); }
-}
-
-@keyframes borda-neon { to { background-position: 0 0, 300% 0; } }
-
-.gaveta a {
+.lateral a {
   position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 11px 14px;
-  border-radius: 10px;
-  color: var(--texto);
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--texto-fraco);
   text-decoration: none;
   font-family: var(--fonte-titulo);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border: 1px solid rgba(199, 125, 255, 0.15);
-  background: rgba(160, 32, 240, 0.08);
-  transition: background 0.25s, border-color 0.25s, padding-left 0.25s, box-shadow 0.25s, color 0.25s;
+  white-space: nowrap;
+  transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
-/* setinha que aparece no hover */
-.gaveta a::after {
-  content: "›";
-  margin-left: auto;
-  font-size: 1.3rem;
-  line-height: 1;
-  opacity: 0;
-  transform: translateX(-8px);
-  transition: opacity 0.25s, transform 0.25s;
-}
-/* brilho que passa por cima do item */
-.gaveta a::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.5s;
-}
-.gaveta a:hover, .gaveta a:focus-visible {
-  color: #fff;
-  background: linear-gradient(90deg, var(--roxo-escuro), var(--roxo));
-  border-color: var(--roxo-claro);
-  padding-left: 20px;
-  box-shadow: 0 0 18px rgba(160, 32, 240, 0.7);
-  outline: none;
-}
-.gaveta a:hover::before, .gaveta a:focus-visible::before { left: 130%; }
-.gaveta a:hover::after, .gaveta a:focus-visible::after { opacity: 1; transform: none; }
-
-.gaveta a .ico {
-  width: 34px;
-  height: 34px;
+.lateral .ico {
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 8px;
-  background: rgba(160, 32, 240, 0.3);
-  border: 1px solid rgba(199, 125, 255, 0.4);
-  font-size: 1.05rem;
-  box-shadow: 0 0 10px rgba(160, 32, 240, 0.4);
-  transition: transform 0.3s, background 0.3s;
+  border-radius: 10px;
+  background: rgba(160, 32, 240, 0.18);
+  border: 1px solid rgba(199, 125, 255, 0.25);
+  font-size: 1.1rem;
+  transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
 }
-.gaveta a:hover .ico, .gaveta a:focus-visible .ico {
-  transform: scale(1.15) rotate(-8deg);
-  background: rgba(0, 0, 0, 0.3);
+.lateral .ico img { width: 22px; height: 22px; object-fit: contain; }
+.lateral a:hover, .lateral a:focus-visible {
+  color: #fff;
+  background: rgba(160, 32, 240, 0.15);
+  border-color: var(--borda);
+  outline: none;
 }
-.gaveta hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--roxo-claro), transparent); margin: 4px 0; }
+.lateral a:hover .ico, .lateral a:focus-visible .ico {
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 0 12px rgba(160, 32, 240, 0.6);
+}
+/* página atual: acesa, com uma barrinha na esquerda */
+.lateral a.atual {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(90, 24, 154, 0.7), rgba(160, 32, 240, 0.35));
+  border-color: var(--roxo-claro);
+  box-shadow: 0 0 16px rgba(160, 32, 240, 0.45);
+}
+.lateral a.atual .ico { background: var(--roxo); box-shadow: 0 0 12px var(--roxo); }
+.lateral a.atual::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 20%;
+  bottom: 20%;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--roxo-claro);
+  box-shadow: 0 0 10px var(--roxo-claro);
+}
+.lateral hr { border: 0; height: 1px; margin: 10px 6px; background: linear-gradient(90deg, transparent, var(--borda), transparent); }
+.lateral .rot { transition: opacity 0.2s; }
 
-/* itens entram um de cada vez quando a gaveta abre */
-.gaveta > * { opacity: 0; transform: translateX(-14px); }
-.gaveta-wrap.aberta .gaveta > * { animation: item-entra 0.35s calc(var(--i, 0) * 60ms) forwards; }
-@media (hover: hover) {
-  .gaveta-wrap:hover .gaveta > * { animation: item-entra 0.35s calc(var(--i, 0) * 60ms) forwards; }
+/* a página inteira anda pro lado pra dar espaço pra barra;
+   assim tudo fica centralizado no espaço que sobra (inclusive a logo de cima) */
+body.com-lateral { --lat-atual: var(--lat-w); padding-left: var(--lat-atual); transition: padding-left 0.3s; }
+body.lateral-mini { --lat-atual: var(--lat-mini); }
+/* a barra de cima ocupa a tela toda: a logo fica sempre no centro, sem andar junto com a barra lateral */
+body.com-lateral .nav {
+  margin-left: calc(-1 * var(--lat-atual));
+  padding-left: 16px;
+  padding-right: 16px;
+  transition: margin-left 0.3s;
 }
-@keyframes item-entra { to { opacity: 1; transform: none; } }
+body.com-lateral .botao-lateral { position: absolute; left: 16px; top: calc((var(--nav-h) - 42px) / 2); }
+body.com-lateral .nav-marca { grid-column: 2; }
+
+/* botão "Área de membros" no canto direito do cabeçalho */
+.botao-area { grid-column: 3; justify-self: end; padding: 8px 14px; font-size: 0.7rem; letter-spacing: 1.5px; max-width: 100%; }
+.botao-area .txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; }
+.botao-area .ico { font-size: 0.8rem; }
+.botao-area.atual { box-shadow: var(--brilho); border-color: #fff; }
+@media (max-width: 700px) {
+  .botao-area { padding: 8px 10px; }
+  .botao-area .txt { display: none; } /* no celular fica só o cadeado */
+}
+
+/* recolhida (computador): só os ícones */
+body.lateral-mini .lateral { width: var(--lat-mini); }
+body.lateral-mini .lateral a { justify-content: center; gap: 0; padding: 8px 0; }
+body.lateral-mini .lateral .rot { opacity: 0; width: 0; overflow: hidden; }
+
+/* fundo escuro atrás da barra no celular */
+.lateral-fundo {
+  position: fixed;
+  inset: var(--nav-h) 0 0 0;
+  z-index: 44;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* tela pequena: a barra fica escondida e abre por cima com o ☰ */
+@media (max-width: 900px) {
+  .lateral { transform: translateX(-100%); width: var(--lat-w); box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6); }
+  body.com-lateral { --lat-atual: 0px; }
+  body.lateral-aberta .lateral { transform: none; }
+  body.lateral-aberta .lateral-fundo { opacity: 1; visibility: visible; }
+}
 
 /* ================= CONTEÚDO ================= */
 main { flex: 1; width: 100%; }
@@ -332,14 +346,19 @@ a.item:hover, a.item:focus-visible {
 
 /* ================= RODAPÉ ================= */
 .rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
   text-align: center;
-  padding: 32px 20px 28px;
+  padding: 20px 20px;
   border-top: 1px solid var(--borda);
   background: linear-gradient(to top, rgba(90, 24, 154, 0.25), transparent);
 }
 .portal {
   display: inline-block;
-  width: 180px;
+  width: 64px;
   transition: transform 0.4s, filter 0.4s;
   filter: drop-shadow(0 0 10px rgba(160, 32, 240, 0.5));
 }
@@ -350,17 +369,23 @@ a.item:hover, a.item:focus-visible {
 }
 .portal img { animation: flutuar 3s ease-in-out infinite; }
 .rodape p {
-  margin-top: 12px;
   font-family: var(--fonte-titulo);
   font-size: 0.75rem;
   letter-spacing: 3px;
   color: var(--texto-fraco);
   text-transform: uppercase;
 }
+.rodape p a {
+  color: var(--roxo-claro);
+  text-decoration: none;
+  text-transform: none;
+  transition: color 0.25s, text-shadow 0.25s;
+}
+.rodape p a:hover, .rodape p a:focus-visible { color: #fff; text-shadow: var(--brilho); outline: none; }
 
 @keyframes flutuar {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-4px); }
 }
 
 /* animação de entrada dos elementos */
@@ -369,16 +394,15 @@ a.item:hover, a.item:focus-visible {
 
 /* ================= CELULAR ================= */
 @media (max-width: 600px) {
-  .nav { padding: 0 16px; gap: 18px; }
-  .gaveta { position: fixed; top: var(--nav-h); left: 12px; right: 12px; min-width: 0; --x: 0; }
-  .gaveta::before { display: none; }
+  .nav { padding: 0 12px; gap: 10px; }
   .container { padding: 32px 16px; }
   .cartao { padding: 18px; }
-  .portal { width: 140px; }
+  .rodape { gap: 10px; padding: 16px 12px; flex-wrap: nowrap; }
+  .portal { width: 44px; flex-shrink: 0; }
+  .rodape p { font-size: 0.6rem; letter-spacing: 1px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .aparecer { opacity: 1; transform: none; }
-  .gaveta > * { opacity: 1; transform: none; }
 }

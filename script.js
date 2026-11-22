@@ -3,67 +3,97 @@
    O MENU e o RODAPÉ ficam aqui: mude uma vez, muda em todas as páginas.
    ========================================================= */
 
-// ---------- itens da gaveta (menu) ----------
+// ---------- botões da barra lateral ----------
 // Para adicionar uma página nova, copie uma linha e troque os dados.
+// { separador: true } desenha uma linha divisória.
 const MENU = [
-  { nome: "Membros",    link: "membros.html",  icone: "👥" },
+  { nome: "Home",       link: "index.html",    imagem: "favicon.png" },
+  { nome: "Membros",    link: "membros.html",  icone: "🧑‍🤝‍🧑" },
   { nome: "Projetos",   link: "projetos.html", icone: "🛠️" },
   { nome: "RPG",        link: "rpg.html",      icone: "🎲" },
   { nome: "Lore",       link: "lore.html",     icone: "📜" },
   { separador: true },
-  { nome: "Discord",    link: "https://discord.gg/Jna6Ru8eWD", icone: "💬", externo: true },
+  { nome: "Discord",    link: "https://discord.gg/Jna6Ru8eWD", imagem: "disc.png", externo: true },
 ];
+// (use "icone" pra emoji ou "imagem" pra um arquivo da pasta images)
 
 const GITHUB = "https://github.com/pepino-dev";
 
-// ---------- monta a barra de cima ----------
+// ---------- Área de membros (login "de mentirinha") ----------
+// Os @ do Discord (sem o @), separados por situação. Só os ATIVOS conseguem entrar.
+// Pra mudar alguém de situação, recorte o @ e cole na outra lista.
+const LOGIN_ATIVOS = [
+  "fekkho", "httpspedru", "brenex5212", "leothenard", "luizz1603", "lucasbcc",
+  "furmelancholy", "seupaidecalcinha6026", "rodrekee", "ouhkaes",
+];
+const LOGIN_OCIOSOS = ["gabigrc", "gisicolin", "furyed_"];
+const LOGIN_EX = ["bandeco", "fencer"];
+// A senha não fica escrita aqui, só um "código" dela (SHA-256).
+// Pra trocar a senha, peça pro Claude gerar o código da senha nova.
+const LOGIN_SENHA_HASH = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
+
+function usuarioLogado() {
+  try { return localStorage.getItem("pepino-membro"); } catch (e) { return null; }
+}
+
+// ---------- monta a barra de cima e a barra lateral ----------
 function montarNav() {
-  const itens = MENU.map((i, n) =>
+  const paginaAtual = location.pathname.split("/").pop() || "index.html";
+  const itens = MENU.map((i) =>
     i.separador
-      ? `<hr style="--i:${n}">`
-      : `<a href="${i.link}" style="--i:${n}"${i.externo ? ' target="_blank" rel="noopener"' : ""}>
-           <span class="ico">${i.icone}</span>${i.nome}
+      ? "<hr>"
+      : `<a href="${i.link}" title="${i.nome}"${i.link === paginaAtual ? ' class="atual" aria-current="page"' : ""}${i.externo ? ' target="_blank" rel="noopener"' : ""}>
+           <span class="ico">${i.imagem ? `<img src="images/${i.imagem}" alt="">` : i.icone}</span><span class="rot">${i.nome}</span>
          </a>`
   ).join("");
 
   const nav = document.createElement("header");
   nav.className = "nav";
   nav.innerHTML = `
+    <button class="botao-lateral" type="button" aria-label="Abrir ou recolher o menu">☰</button>
     <a class="nav-marca" href="index.html">
       <img src="images/favicon.png" alt=""><span>PEPINO</span>
     </a>
-    <nav class="nav-botoes">
-      <div class="gaveta-wrap">
-        <a class="botao" href="index.html" id="botao-home" aria-haspopup="true" aria-expanded="false">
-          Home <span class="seta">▼</span>
-        </a>
-        <div class="gaveta" role="menu">${itens}</div>
-      </div>
-    </nav>`;
-  document.body.prepend(nav);
+    <a class="botao botao-area${paginaAtual === "area.html" ? " atual" : ""}" href="area.html">
+      ${usuarioLogado() ? `<span class="ico">🟢</span><span class="txt">@${usuarioLogado()}</span>` : `<span class="ico">🔒</span><span class="txt">Área de membros</span>`}
+    </a>`;
+  const lateral = document.createElement("nav");
+  lateral.className = "lateral";
+  lateral.innerHTML = itens;
+  const fundo = document.createElement("div");
+  fundo.className = "lateral-fundo";
+  document.body.prepend(nav, lateral, fundo);
+  document.body.classList.add("com-lateral");
 
-  // No celular não existe "passar o mouse": o 1º toque abre a gaveta, o 2º vai pra Home.
-  const wrap = nav.querySelector(".gaveta-wrap");
-  const botao = nav.querySelector("#botao-home");
-  const semMouse = () =>
-    window.matchMedia("(hover: none), (max-width: 600px)").matches;
+  // ☰ no computador: recolhe/expande (e lembra a escolha). No celular: abre por cima.
+  const celular = window.matchMedia("(max-width: 900px)");
+  let mini = false;
+  try { mini = localStorage.getItem("lateral-mini") === "1"; } catch (e) {}
+  const aplicar = () => {
+    document.body.classList.toggle("lateral-mini", mini && !celular.matches);
+    if (!celular.matches) document.body.classList.remove("lateral-aberta");
+  };
+  aplicar();
+  celular.addEventListener("change", aplicar);
+  // outras páginas podem pedir pra barra começar recolhida (sem mudar a preferência salva)
+  window.recolherLateral = () => {
+    mini = true;
+    document.body.style.transition = "none"; // recolhe na hora, sem animação de entrada
+    aplicar();
+    requestAnimationFrame(() => (document.body.style.transition = ""));
+  };
 
-  botao.addEventListener("click", (e) => {
-    if (semMouse() && !wrap.classList.contains("aberta")) {
-      e.preventDefault();
-      wrap.classList.add("aberta");
-      botao.setAttribute("aria-expanded", "true");
+  nav.querySelector(".botao-lateral").addEventListener("click", () => {
+    if (celular.matches) {
+      document.body.classList.toggle("lateral-aberta");
+    } else {
+      mini = !mini;
+      try { localStorage.setItem("lateral-mini", mini ? "1" : "0"); } catch (e) {}
+      aplicar();
     }
   });
-  // teclado: abre com setinha pra baixo, fecha com Esc
-  botao.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); wrap.classList.add("aberta"); wrap.querySelector(".gaveta a").focus(); }
-  });
-  wrap.addEventListener("focusout", (e) => { if (!wrap.contains(e.relatedTarget)) wrap.classList.remove("aberta"); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") wrap.classList.remove("aberta"); });
-  document.addEventListener("click", (e) => {
-    if (!wrap.contains(e.target)) { wrap.classList.remove("aberta"); botao.setAttribute("aria-expanded", "false"); }
-  });
+  fundo.addEventListener("click", () => document.body.classList.remove("lateral-aberta"));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.body.classList.remove("lateral-aberta"); });
 }
 
 // ---------- monta o rodapé com a caixa portal ----------
@@ -74,7 +104,7 @@ function montarRodape() {
     <a class="portal" href="${GITHUB}" target="_blank" rel="noopener" title="GitHub do Pepino">
       <img src="images/Portal_Box_sprite_001.webp" alt="Caixa portal — abre o GitHub">
     </a>
-    <p>Site Oficial Pepino - by FeeF</p>`;
+    <p>Site Oficial do Pepino - by <a href="membros.html#felipe">@fekkho</a></p>`;
   document.body.append(rodape);
 }
 

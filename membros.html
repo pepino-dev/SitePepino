@@ -190,6 +190,9 @@
     /* ---- daqui pra baixo é o código que monta os cards (não precisa mexer) ---- */
     function esc(t) { return String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
+    // "Lucão" -> "lucao" (usado no link membros.html#lucao, que já abre o card)
+    function slug(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-"); }
+
     // cargos com estilo próprio
     const ESPECIAIS = { "Mestre RPG": "mestre" };
 
@@ -207,7 +210,7 @@
       const redes = `<h4>Redes sociais</h4><div class="redes">${(m.redes || [])
             .map((r) => `<a href="${esc(r.link)}" target="_blank" rel="noopener">${r.icone ? `<img src="images/${esc(r.icone)}" alt="">` : ""}${esc(r.nome)}</a>`).join("")}</div>`;
       return `
-        <div class="item membro" tabindex="0">
+        <div class="item membro" tabindex="0" id="${slug(m.nome)}">
           <button class="fechar" type="button" aria-label="Fechar">×</button>
           <div class="topo">
             <img src="images/${esc(m.foto)}" alt="">
@@ -229,13 +232,25 @@
     });
 
     // abrir/fechar
-    document.querySelectorAll(".membro").forEach((card) => {
-      function abrir() {
-        if (card.classList.contains("aberto")) return;
-        document.querySelectorAll(".membro.aberto").forEach((c) => c.classList.remove("aberto"));
-        card.classList.add("aberto");
-        card.scrollIntoView({ behavior: "smooth", block: "center" });
+    function abrirCard(card) {
+      if (card.classList.contains("aberto")) return;
+      document.querySelectorAll(".membro.aberto").forEach((c) => c.classList.remove("aberto"));
+      card.classList.add("aberto");
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    // link tipo membros.html#felipe abre o card direto
+    function abrirPeloLink() {
+      const card = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (card && card.classList.contains("membro")) {
+        card.classList.add("aparecer", "visivel");
+        setTimeout(() => abrirCard(card), 150);
       }
+    }
+    addEventListener("hashchange", abrirPeloLink);
+    addEventListener("load", abrirPeloLink);
+
+    document.querySelectorAll(".membro").forEach((card) => {
+      const abrir = () => abrirCard(card);
       card.addEventListener("click", (e) => {
         if (e.target.closest(".fechar")) { card.classList.remove("aberto"); return; }
         if (e.target.closest("a")) return;
