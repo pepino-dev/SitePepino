@@ -38,7 +38,8 @@ function usuarioLogado() {
 
 // ---------- monta a barra de cima e a barra lateral ----------
 function montarNav() {
-  const paginaAtual = location.pathname.split("/").pop() || "index.html";
+  // <body data-menu="rpg.html"> faz uma página "filha" acender o botão da página mãe
+  const paginaAtual = document.body.dataset.menu || location.pathname.split("/").pop() || "index.html";
   const itens = MENU.map((i) =>
     i.separador
       ? "<hr>"

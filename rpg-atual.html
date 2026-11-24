@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campanha em andamento · Pepino</title>
+  <link rel="icon" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .voltar { display: inline-flex; gap: 6px; align-items: center; color: var(--texto-fraco); text-decoration: none; font-size: 0.85rem; margin-bottom: 16px; }
+    .voltar:hover { color: var(--roxo-claro); }
+
+    /* ===== topo ===== */
+    .capa-rpg { text-align: center; padding: 20px 0 8px; }
+    .capa-rpg .selo {
+      display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px;
+      border: 1px solid #ffd54a; color: #ffd54a;
+      font-family: var(--fonte-titulo); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(255, 213, 74, 0.25);
+    }
+    .capa-rpg .selo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ffd54a; box-shadow: 0 0 8px #ffd54a; animation: piscar 1.4s infinite; }
+    .nome-campanha {
+      position: relative; display: inline-block; margin: 18px 0 8px;
+      font-family: var(--fonte-titulo); font-weight: 900;
+      font-size: clamp(2.4rem, 9vw, 5rem); letter-spacing: clamp(4px, 1.5vw, 14px);
+      color: #fff; text-shadow: 0 0 10px var(--roxo), 0 0 30px var(--roxo), 0 0 60px var(--roxo-escuro);
+    }
+    .nome-campanha::before, .nome-campanha::after { content: attr(data-texto); position: absolute; inset: 0; opacity: 0.8; text-shadow: none; }
+    .nome-campanha::before { color: #ff2bd6; animation: glitch 2.6s infinite steps(1); }
+    .nome-campanha::after { color: #2bd9ff; animation: glitch 2.6s 0.15s infinite steps(1) reverse; }
+    .capa-rpg .frase { color: var(--texto-fraco); font-style: italic; }
+
+    .fichas-info { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 24px 0 8px; }
+    .fichas-info div {
+      padding: 10px 16px; border-radius: 12px; min-width: 130px;
+      background: rgba(10, 0, 20, 0.7); border: 1px solid var(--borda);
+    }
+    .fichas-info small { display: block; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-fraco); }
+    .fichas-info b { font-family: var(--fonte-titulo); font-size: 0.95rem; color: #fff; }
+
+    .secao {
+      display: flex; align-items: center; gap: 14px; margin: 48px 0 18px;
+      font-family: var(--fonte-titulo); font-size: 0.95rem; letter-spacing: 3px; text-transform: uppercase; color: var(--roxo-claro);
+    }
+    .secao::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--roxo), transparent); }
+
+    /* ===== o chamado (texto censurado) ===== */
+    .chamado { position: relative; line-height: 2; font-size: 1.02rem; }
+    .chamado .tarja {
+      background: #0b0b0b; color: transparent; border-radius: 3px; padding: 0 4px;
+      box-shadow: inset 0 0 0 1px rgba(199, 125, 255, 0.15);
+      cursor: help; transition: color 0.3s, background 0.3s;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }
+    .chamado .tarja:hover { background: #1a0a26; color: var(--roxo-claro); }
+    .chamado .assinatura { margin-top: 14px; text-align: right; color: var(--texto-fraco); font-style: italic; }
+    .lacre {
+      position: absolute; right: 18px; bottom: -18px; width: 54px; height: 54px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 1.4rem;
+      background: radial-gradient(circle at 35% 35%, #c0392b, #6d0f0f); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ===== o grupo ===== */
+    .grupo { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+    .heroi {
+      text-align: center; padding: 18px 10px; border-radius: 16px;
+      background: rgba(10, 0, 20, 0.6); border: 1px dashed var(--borda);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .heroi:hover { border-color: var(--roxo-claro); transform: translateY(-4px); }
+    .heroi .silhueta {
+      width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%;
+      display: grid; place-items: center; font-family: var(--fonte-titulo); font-size: 2rem; color: var(--roxo-claro);
+      background: radial-gradient(circle, rgba(160, 32, 240, 0.25), rgba(5, 0, 8, 0.9) 70%);
+      border: 2px solid var(--roxo-escuro);
+    }
+    .heroi b { display: block; font-family: var(--fonte-titulo); font-size: 0.85rem; letter-spacing: 1px; }
+    .heroi small { color: var(--texto-fraco); font-size: 0.75rem; }
+
+    /* ===== rolador de dados ===== */
+    .mesa { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+    .dados { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .dado {
+      width: 64px; height: 64px; border-radius: 14px; cursor: pointer;
+      font-family: var(--fonte-titulo); font-weight: 700; font-size: 0.95rem; color: #fff;
+      background: linear-gradient(135deg, var(--roxo-escuro), var(--roxo));
+      border: 1px solid var(--roxo-claro);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dado:hover, .dado:focus-visible { transform: translateY(-3px) rotate(-6deg); box-shadow: var(--brilho); outline: none; }
+    .resultado { text-align: center; }
+    .resultado .numero {
+      display: grid; place-items: center; width: 150px; height: 150px; margin: 0 auto 10px;
+      font-family: var(--fonte-titulo); font-weight: 900; font-size: 4rem; color: #fff;
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+      background: linear-gradient(160deg, rgba(160, 32, 240, 0.5), rgba(20, 4, 36, 0.95));
+      text-shadow: 0 0 16px var(--roxo);
+    }
+    .resultado .numero.rolando { animation: rolar 0.6s ease-out; }
+    .resultado .numero.critico { background: linear-gradient(160deg, #ffd54a, #a8740a); text-shadow: 0 0 18px #fff3; color: #1a0a00; }
+    .resultado .numero.falha { background: linear-gradient(160deg, #ff4d4d, #5a0b0b); }
+    .resultado .legenda { min-height: 1.5em; font-family: var(--fonte-titulo); letter-spacing: 2px; font-size: 0.8rem; color: var(--roxo-claro); }
+    .historico { margin-top: 10px; color: var(--texto-fraco); font-size: 0.8rem; min-height: 1.4em; }
+    @keyframes rolar { 0% { transform: rotate(-200deg) scale(0.5); opacity: 0.2; } 70% { transform: rotate(15deg) scale(1.08); } 100% { transform: none; } }
+
+    /* ===== diário ===== */
+    .vazio { text-align: center; color: var(--texto-fraco); }
+    .vazio .icone { font-size: 2.4rem; margin-bottom: 6px; opacity: 0.8; }
+    .sessao { border-left: 3px solid var(--roxo); padding-left: 16px; margin-bottom: 18px; }
+    .sessao h3 { font-family: var(--fonte-titulo); font-size: 0.95rem; letter-spacing: 1px; }
+    .sessao small { color: var(--texto-fraco); }
+
+    @keyframes piscar { 50% { opacity: 0.3; } }
+    @keyframes glitch {
+      0%, 86%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+      88% { clip-path: inset(10% 0 60% 0); transform: translate(-5px, 2px); }
+      91% { clip-path: inset(55% 0 20% 0); transform: translate(5px, -2px); }
+      94% { clip-path: inset(30% 0 40% 0); transform: translate(-3px, 1px); }
+      97% { clip-path: inset(70% 0 5% 0); transform: translate(3px, 0); }
+    }
+    @media (max-width: 700px) { .mesa { grid-template-columns: 1fr; } .lacre { right: 10px; } }
+  </style>
+</head>
+<body data-menu="rpg.html">
+  <main class="container">
+    <a class="voltar" href="rpg.html">‹ Voltar pro RPG</a>
+
+    <!-- ===== TOPO: troque o nome, a frase e as informações quando a campanha for revelada ===== -->
+    <section class="capa-rpg">
+      <span class="selo">Em breve</span><br>
+      <h1 class="nome-campanha" data-texto="??????">??????</h1>
+      <p class="frase">"Uma nova história está prestes a ser escrita..."</p>
+      <div class="fichas-info">
+        <div><small>Mestre</small><b>????</b></div>
+        <div><small>Início</small><b>??/??/2026</b></div>
+        <div><small>Sistema</small><b>???</b></div>
+        <div><small>Sessões</small><b>0</b></div>
+      </div>
+    </section>
+
+    <!-- ===== O CHAMADO: texto de apresentação. Cada <span class="tarja"> é um pedaço censurado
+         (passando o mouse aparece o que está escrito dentro). ===== -->
+    <h2 class="secao">📜 O chamado</h2>
+    <div class="cartao chamado">
+      <p>
+        Aventureiros do Pepino, vocês foram convocados. Em algum lugar
+        <span class="tarja">além das montanhas de</span> ??????, algo despertou.
+        Os rumores falam de <span class="tarja">uma relíquia esquecida</span> e de um preço que
+        <span class="tarja">ninguém está disposto a pagar</span>. Preparem suas fichas,
+        afiem suas armas e rezem para os dados.
+      </p>
+      <p class="assinatura">— assinado, <span class="tarja">o Mestre</span></p>
+      <div class="lacre" title="Lacrado até a sessão 0">🔒</div>
+    </div>
+
+    <!-- ===== O GRUPO: troque "?" pela inicial/emoji, o nome e a classe de cada personagem ===== -->
+    <h2 class="secao">⚔️ O grupo</h2>
+    <div class="grupo">
+      <div class="heroi"><div class="silhueta">?</div><b>Vaga aberta</b><small>Aguardando herói</small></div>
+      <div class="heroi"><div class="silhueta">?</div><b>Vaga aberta</b><small>Aguardando herói</small></div>
+      <div class="heroi"><div class="silhueta">?</div><b>Vaga aberta</b><small>Aguardando herói</small></div>
+      <div class="heroi"><div class="silhueta">?</div><b>Vaga aberta</b><small>Aguardando herói</small></div>
+      <div class="heroi"><div class="silhueta">?</div><b>Vaga aberta</b><small>Aguardando herói</small></div>
+    </div>
+
+    <!-- ===== ROLADOR DE DADOS ===== -->
+    <h2 class="secao">🎲 Role os dados</h2>
+    <div class="cartao mesa">
+      <div class="dados">
+        <button class="dado" data-lados="4">d4</button>
+        <button class="dado" data-lados="6">d6</button>
+        <button class="dado" data-lados="8">d8</button>
+        <button class="dado" data-lados="10">d10</button>
+        <button class="dado" data-lados="12">d12</button>
+        <button class="dado" data-lados="20">d20</button>
+        <button class="dado" data-lados="100">d100</button>
+      </div>
+      <div class="resultado">
+        <div class="numero" id="numero">?</div>
+        <div class="legenda" id="legenda">Escolha um dado</div>
+        <div class="historico" id="historico"></div>
+      </div>
+    </div>
+
+    <!-- ===== DIÁRIO DE SESSÕES: quando tiver sessões, apague o bloco "vazio" e use:
+         <div class="sessao"><h3>Sessão 1 — Título</h3><small>dd/mm/2026</small><p>Resumo...</p></div> ===== -->
+    <h2 class="secao">📖 Diário de sessões</h2>
+    <div class="cartao">
+      <div class="vazio">
+        <div class="icone">🕯️</div>
+        <p>Nenhuma sessão registrada ainda.<br>O destino aguarda...</p>
+      </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
+  <script>
+    recolherLateral(); // a barra lateral abre recolhida nessa página
+
+    // rolador de dados
+    const numero = document.getElementById("numero");
+    const legenda = document.getElementById("legenda");
+    const historico = document.getElementById("historico");
+    const ultimas = [];
+    document.querySelectorAll(".dado").forEach((botao) => {
+      botao.addEventListener("click", () => {
+        const lados = Number(botao.dataset.lados);
+        const valor = Math.floor(Math.random() * lados) + 1;
+        numero.className = "numero";
+        void numero.offsetWidth;
+        numero.classList.add("rolando");
+        numero.textContent = valor;
+        let texto = `d${lados}`;
+        if (lados === 20 && valor === 20) { numero.classList.add("critico"); texto = "⭐ CRÍTICO! ⭐"; }
+        else if (lados === 20 && valor === 1) { numero.classList.add("falha"); texto = "💀 FALHA CRÍTICA 💀"; }
+        legenda.textContent = texto;
+        ultimas.unshift(`d${lados}: ${valor}`);
+        if (ultimas.length > 5) ultimas.pop();
+        historico.textContent = "Últimas: " + ultimas.join(" · ");
+      });
+    });
+  </script>
+</body>
+</html>
