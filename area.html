@@ -133,7 +133,10 @@
         return;
       }
       try { localStorage.setItem("pepino-membro", usuario); } catch (err) {}
-      location.reload(); // recarrega pra atualizar o botão do cabeçalho
+      // se veio de outra página (ex: area.html?voltar=lore.html), volta pra ela
+      const voltar = new URLSearchParams(location.search).get("voltar");
+      if (voltar && /^[a-z0-9-]+\.html$/.test(voltar)) location.href = voltar;
+      else location.reload(); // recarrega pra atualizar o botão do cabeçalho
     });
 
     document.getElementById("sair").addEventListener("click", () => {

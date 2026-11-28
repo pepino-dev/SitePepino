@@ -119,54 +119,80 @@ function montarFundo() {
   const mouse = { x: -9999, y: -9999 };
   let pontos = [];
 
+  // Otimizações (pra não pesar a placa de vídeo):
+  // - desenha 30 vezes por segundo (antes era a cada quadro do monitor, até 144x)
+  // - desenha em resolução normal da tela (as bolinhas são pequenas, não faz diferença)
+  // - para de desenhar quando a aba não está visível
+  const FPS = 30;
+  const INTERVALO = 1000 / FPS;
+  const VEL = 60 / FPS; // compensa a velocidade pra parecer igual a antes
+  const ALCANCE = 120, ALCANCE2 = ALCANCE * ALCANCE;
+
   function redimensionar() {
-    canvas.width = innerWidth * devicePixelRatio;
-    canvas.height = innerHeight * devicePixelRatio;
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    const qtd = Math.min(110, Math.floor((innerWidth * innerHeight) / 14000));
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    const qtd = Math.min(80, Math.floor((innerWidth * innerHeight) / 16000));
     pontos = Array.from({ length: qtd }, () => ({
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
+      vx: (Math.random() - 0.5) * 0.4 * VEL,
+      vy: (Math.random() - 0.5) * 0.4 * VEL,
       r: Math.random() * 1.6 + 0.6,
     }));
   }
 
   function desenhar() {
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // bolinhas (todas num desenho só)
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "rgba(199,125,255,0.85)";
+    ctx.beginPath();
     for (const p of pontos) {
       // o mouse empurra as partículas
-      const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
-      if (d < 120) { p.x += (dx / d) * 1.5; p.y += (dy / d) * 1.5; }
+      const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+      if (d2 < ALCANCE2) { const d = Math.sqrt(d2) || 1; p.x += (dx / d) * 1.5 * VEL; p.y += (dy / d) * 1.5 * VEL; }
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0 || p.x > innerWidth) p.vx *= -1;
       if (p.y < 0 || p.y > innerHeight) p.vy *= -1;
-      ctx.beginPath();
+      ctx.moveTo(p.x + p.r, p.y);
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(199,125,255,0.85)";
-      ctx.fill();
     }
+    ctx.fill();
     // linhas entre partículas próximas
+    ctx.strokeStyle = "rgb(160,32,240)";
+    ctx.lineWidth = 1;
     for (let i = 0; i < pontos.length; i++) {
+      const a = pontos[i];
       for (let j = i + 1; j < pontos.length; j++) {
-        const a = pontos[i], b = pontos[j];
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 120) {
-          ctx.strokeStyle = `rgba(160,32,240,${0.35 * (1 - d / 120)})`;
-          ctx.lineWidth = 1;
+        const b = pontos[j];
+        const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+        if (d2 < ALCANCE2) {
+          ctx.globalAlpha = 0.35 * (1 - Math.sqrt(d2) / ALCANCE);
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
     }
-    requestAnimationFrame(desenhar);
+    ctx.globalAlpha = 1;
   }
 
-  addEventListener("resize", redimensionar);
+  let ultimo = 0, rodando = false;
+  function loop(t) {
+    if (!rodando) return;
+    requestAnimationFrame(loop);
+    if (t - ultimo < INTERVALO) return;
+    ultimo = t;
+    desenhar();
+  }
+  function iniciar() { if (!rodando) { rodando = true; requestAnimationFrame(loop); } }
+  function parar() { rodando = false; }
+  document.addEventListener("visibilitychange", () => (document.hidden ? parar() : iniciar()));
+
+  addEventListener("resize", () => { redimensionar(); desenhar(); });
   addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
   addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
   redimensionar();
   desenhar();
+  if (!document.hidden) iniciar();
 }
 
 // ---------- elementos aparecem suavemente ao rolar ----------

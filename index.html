@@ -46,6 +46,7 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       animation: girar 6s linear infinite;
+      will-change: transform; /* gira "pronto", sem redesenhar o brilho a cada quadro */
       filter: drop-shadow(0 0 10px var(--roxo));
     }
     .anel.dois { inset: -16px; opacity: 0.45; animation-duration: 10s; animation-direction: reverse; }

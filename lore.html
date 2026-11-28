@@ -8,94 +8,516 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* capítulos fechados: clica no título pra abrir */
-    .capitulo { padding: 0; overflow: hidden; }
-    .capitulo summary {
-      list-style: none;
-      cursor: pointer;
+    .dica-estante { text-align: center; color: var(--texto-fraco); margin: -16px 0 28px; font-size: 0.9rem; }
+    .dica-estante a { color: var(--roxo-claro); }
+
+    /* aviso "só membros" */
+    .aviso {
+      position: fixed; inset: 0; z-index: 110; display: grid; place-items: center; padding: 20px;
+      background: rgba(3, 0, 6, 0.9);
+      opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+    }
+    .aviso.aberto { opacity: 1; visibility: visible; }
+    .aviso-caixa {
+      position: relative; max-width: 420px; text-align: center; padding: 32px 26px;
+      background: linear-gradient(160deg, #1a0830, #0b0313); border: 1px solid var(--roxo-claro); border-radius: 16px;
+      box-shadow: 0 0 40px rgba(160, 32, 240, 0.45);
+      transform: scale(0.9); transition: transform 0.3s cubic-bezier(.2, .9, .3, 1.3);
+    }
+    .aviso.aberto .aviso-caixa { transform: none; }
+    .aviso-caixa .cadeado { font-size: 2.8rem; margin-bottom: 8px; }
+    .aviso-caixa h2 { font-family: var(--fonte-titulo); font-size: 1.05rem; letter-spacing: 2px; margin-bottom: 10px; color: #fff; }
+    .aviso-caixa p { color: var(--texto-fraco); margin-bottom: 22px; }
+    .aviso-caixa .acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .aviso-caixa .botao { padding: 10px 16px; font-size: 0.75rem; }
+    .botao.vazado { background: transparent; }
+
+    /* ===== ESTANTE ===== */
+    .estante {
+      position: relative;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 28px 70px 0;
+      border-radius: 18px 18px 6px 6px;
+      background:
+        linear-gradient(90deg, rgba(160, 32, 240, 0.08) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(180deg, #12051f, #07020c);
+      border: 2px solid rgba(199, 125, 255, 0.35);
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(160, 32, 240, 0.25);
+    }
+    .prateleira {
       display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      min-height: 250px;
+      padding: 0 10px;
+      position: relative;
+    }
+    /* tábua da prateleira em neon */
+    .prateleira::after {
+      content: "";
+      position: absolute;
+      left: -70px; right: -70px; bottom: -14px;
+      height: 14px;
+      background: linear-gradient(180deg, #3a1260, #1b0730);
+      border-top: 2px solid var(--roxo-claro);
+      box-shadow: 0 0 18px rgba(199, 125, 255, 0.6), 0 8px 20px rgba(0, 0, 0, 0.7);
+    }
+    .estante-base { height: 34px; }
+
+    /* ===== LIVROS ===== */
+    .livro {
+      --cor: #a020f0;
+      position: relative;
+      width: var(--larg, 62px);
+      height: var(--alt, 220px);
+      transform: rotate(var(--giro, 0deg));
+      transform-origin: bottom center;
+      border: none;
+      border-radius: 6px 6px 3px 3px;
+      cursor: pointer;
+      color: #fff;
+      font: inherit;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 6%, transparent 6% 90%, rgba(0, 0, 0, 0.35) 90%),
+        linear-gradient(180deg, color-mix(in srgb, var(--cor) 85%, #fff), color-mix(in srgb, var(--cor) 55%, #000));
+      box-shadow: 0 0 14px color-mix(in srgb, var(--cor) 55%, transparent), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+      transition: transform 0.3s cubic-bezier(.2, .9, .3, 1.3), box-shadow 0.3s, filter 0.3s;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 20px 24px;
+      padding: 14px 0 12px;
+    }
+    /* faixas decorativas da lombada */
+    .livro::before, .livro::after {
+      content: ""; position: absolute; left: 8%; right: 10%; height: 3px;
+      background: rgba(255, 255, 255, 0.45); box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+    }
+    .livro::before { top: 8px; }
+    .livro::after { bottom: 34px; }
+    .livro .lombada {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
       font-family: var(--fonte-titulo);
-      font-size: 1.05rem;
+      font-weight: 900;
+      font-size: 0.85rem;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--roxo-claro);
-      user-select: none;
-      transition: background 0.25s, color 0.25s;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
     }
-    .capitulo summary::-webkit-details-marker { display: none; }
-    .capitulo summary::after {
-      content: "+";
-      width: 30px;
-      height: 30px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      border: 1px solid var(--roxo-claro);
-      font-size: 1.2rem;
-      transition: transform 0.3s, background 0.3s;
+    .livro .ano {
+      font-family: var(--fonte-titulo);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 5px;
+      border-radius: 4px;
     }
-    .capitulo summary:hover, .capitulo summary:focus-visible { background: rgba(160, 32, 240, 0.15); color: #fff; outline: none; }
-    .capitulo summary:hover::after { background: var(--roxo); box-shadow: var(--brilho); }
-    .capitulo[open] summary { border-bottom: 1px solid var(--borda); color: #fff; }
-    .capitulo[open] summary::after { transform: rotate(45deg); background: var(--roxo); }
-    .capitulo .texto { padding: 20px 24px 24px; }
-    .capitulo[open] .texto { animation: abrir 0.4s ease; }
-    @keyframes abrir { from { opacity: 0; transform: translateY(-8px); } }
-    @media (max-width: 600px) {
-      .capitulo summary { padding: 16px 18px; font-size: 0.95rem; }
-      .capitulo .texto { padding: 16px 18px 20px; }
+    .livro:hover, .livro:focus-visible {
+      transform: translateY(-18px) rotate(var(--giro, 0deg));
+      box-shadow: 0 0 26px var(--cor), 0 0 50px color-mix(in srgb, var(--cor) 50%, transparent);
+      outline: none;
+      z-index: 2;
+    }
+    /* livro trancado (em breve) */
+    .livro.trancado { filter: grayscale(0.7) brightness(0.6); cursor: not-allowed; }
+    .livro.trancado:hover { transform: rotate(var(--giro, 0deg)); filter: grayscale(0.7) brightness(0.75); box-shadow: none; }
+    .livro.trancado.balanca { animation: balanca 0.4s; }
+    @keyframes balanca { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+
+    /* ===== VELAS NEON ===== */
+    .vela {
+      position: absolute; bottom: 34px; width: 26px; height: 70px; z-index: 95; /* fica acima da escuridão */
+      padding: 0; border: none; cursor: pointer;
+      border-radius: 6px 6px 3px 3px;
+      background: linear-gradient(180deg, #f3e6ff, #b98ad8);
+      box-shadow: 0 0 12px rgba(199, 125, 255, 0.5);
+      transition: box-shadow 0.4s, filter 0.4s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .vela:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 4px; }
+    /* vela apagada: sem chama, mas com um contorno fraquinho pra dar pra achar no escuro */
+    .vela.apagada { filter: brightness(0.75); box-shadow: 0 0 8px rgba(199, 125, 255, 0.45); }
+    .vela.apagada::after { opacity: 0; animation: none; transform: translateX(-50%) scale(0.2); }
+    .vela::after { transition: opacity 0.3s, transform 0.3s; }
+    .fumaca {
+      position: absolute; top: -16px; left: 50%; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(210, 200, 225, 0.7); filter: blur(2px); pointer-events: none;
+      animation: fumaca 1.4s ease-out forwards;
+    }
+    .fumaca.f2 { animation-delay: 0.15s; left: 40%; }
+    .fumaca.f3 { animation-delay: 0.3s; left: 60%; }
+    @keyframes fumaca {
+      0% { transform: translate(-50%, 0) scale(1); opacity: 0.8; }
+      100% { transform: translate(-30%, -60px) scale(3.5); opacity: 0; }
+    }
+
+    /* escuridão do site: 1 vela apagada = meio escuro, 2 = escuro */
+    .escuridao {
+      position: fixed; inset: 0; z-index: 90; pointer-events: none;
+      background: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.85), #000);
+      opacity: 0; transition: opacity 0.9s ease;
+    }
+    .escuridao.meia { opacity: 0.5; }
+    .escuridao.total { opacity: 0.85; }
+    .vela.esq { left: 22px; }
+    .vela.dir { right: 22px; height: 54px; }
+    .vela::before { /* pavio */
+      content: ""; position: absolute; top: -8px; left: 50%; width: 2px; height: 9px; background: #333; transform: translateX(-50%);
+    }
+    .vela::after { /* chama */
+      content: ""; position: absolute; top: -30px; left: 50%; width: 14px; height: 22px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: radial-gradient(circle at 50% 70%, #fff 0 20%, #ffd54a 35%, #ff7b00 60%, transparent 70%);
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 10px #ffb02e) drop-shadow(0 0 22px rgba(255, 120, 0, 0.6));
+      animation: chama 1.6s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes chama {
+      0% { transform: translateX(-50%) scale(1, 1) rotate(-2deg); }
+      50% { transform: translateX(-50%) scale(0.9, 1.1) rotate(2deg); }
+      100% { transform: translateX(-50%) scale(1.05, 0.95) rotate(-1deg); }
+    }
+
+    /* ===== LIVRO ABERTO (janela) ===== */
+    .leitor {
+      position: fixed; inset: 0; z-index: 100;
+      display: grid; place-items: center; padding: 20px;
+      background: rgba(3, 0, 6, 0.9);
+      opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+    }
+    .leitor.aberto { opacity: 1; visibility: visible; }
+    /* capa do livro (na cor do livro escolhido) com as páginas por dentro */
+    .livro-aberto {
+      --cor: #a020f0;
+      --gap: 88px; /* espaço entre as duas páginas (a "dobra") */
+      position: relative;
+      width: min(1000px, 100%);
+      height: min(620px, calc(100vh - 40px));
+      padding: 14px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--cor) 75%, #000), color-mix(in srgb, var(--cor) 35%, #000));
+      box-shadow: 0 0 40px color-mix(in srgb, var(--cor) 55%, transparent), 0 30px 80px rgba(0, 0, 0, 0.85);
+      transform: perspective(1400px) rotateX(18deg) scale(0.85);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(.2, .9, .3, 1.1), opacity 0.4s;
+    }
+    .leitor.aberto .livro-aberto { transform: none; opacity: 1; }
+
+    /* as folhas: papel antigo, com a dobra escura no meio */
+    .paginas {
+      position: relative;
+      height: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      perspective: 2000px;
+      background: linear-gradient(90deg,
+        #e9dcbd 0%, #f5ebd3 8%, #f5ebd3 42%, #dccaa2 48.5%, #a88f63 50%, #dccaa2 51.5%, #f5ebd3 58%, #f5ebd3 92%, #e9dcbd 100%);
+      box-shadow: inset 0 0 50px rgba(110, 70, 20, 0.35), 0 0 0 3px #d8c7a0, 0 0 0 5px #b9a47a;
+    }
+    .recorte { position: absolute; inset: 46px 44px 58px; overflow: hidden; }
+    .fluxo {
+      height: 100%;
+      column-count: 2;
+      column-gap: var(--gap);
+      column-fill: auto;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.04rem;
+      line-height: 1.75;
+      color: #2b1d10;
+      transition: transform 0.5s ease;
+    }
+    .fluxo p { margin: 0 0 0.9em; text-indent: 1.6em; text-align: justify; hyphens: auto; }
+    .fluxo p.fim { text-indent: 0; text-align: center; margin-top: 1.6em; font-style: italic; color: #8a7150; break-inside: avoid; }
+    .cabeca-cap { text-align: center; margin-bottom: 22px; break-inside: avoid; }
+    .cabeca-cap small { display: block; font-family: var(--fonte-titulo); font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase; color: #7a6040; }
+    .cabeca-cap b { display: block; font-family: var(--fonte-titulo); font-weight: 900; font-size: 3rem; line-height: 1.1; color: color-mix(in srgb, var(--cor) 70%, #000); }
+    .cabeca-cap span { font-family: var(--fonte-titulo); letter-spacing: 6px; color: #7a6040; }
+    .cabeca-cap .enfeite { display: block; margin-top: 6px; font-size: 1.3rem; color: #a88f63; letter-spacing: 0; }
+
+    /* número das páginas */
+    .num-pag { position: absolute; bottom: 20px; font-family: Georgia, serif; font-style: italic; font-size: 0.85rem; color: #8a7150; }
+    .num-pag.esq { left: 25%; transform: translateX(-50%); }
+    .num-pag.dir { right: 25%; transform: translateX(50%); }
+
+    /* folha que vira quando passa de página */
+    .folha {
+      position: absolute; top: 0; bottom: 0; width: 50%; z-index: 3; pointer-events: none;
+      background: linear-gradient(90deg, #f5ebd3, #e6d6b2);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      backface-visibility: hidden;
+    }
+    .folha.pra-frente { left: 50%; transform-origin: left center; animation: virar-frente 0.55s ease-in forwards; }
+    .folha.pra-tras { left: 0; transform-origin: right center; animation: virar-tras 0.55s ease-in forwards; }
+    @keyframes virar-frente { 0% { opacity: 1; transform: rotateY(0); } 100% { opacity: 1; transform: rotateY(-180deg); } }
+    @keyframes virar-tras { 0% { opacity: 1; transform: rotateY(0); } 100% { opacity: 1; transform: rotateY(180deg); } }
+
+    /* setas de virar página nas laterais do livro */
+    .virar {
+      position: absolute; top: 50%; z-index: 4;
+      width: 46px; height: 46px; margin-top: -23px; border-radius: 50%;
+      border: 1px solid var(--roxo-claro); background: rgba(10, 0, 20, 0.85); color: #fff;
+      font-size: 1.5rem; line-height: 1; cursor: pointer;
+      transition: background 0.25s, box-shadow 0.25s, opacity 0.25s;
+    }
+    .virar:hover { background: var(--roxo); box-shadow: var(--brilho); }
+    .virar:disabled { opacity: 0.25; pointer-events: none; }
+    .virar.ant { left: -23px; }
+    .virar.prox { right: -23px; }
+    .fechar-livro {
+      position: absolute; top: -16px; right: -16px; z-index: 5;
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--roxo-claro); background: rgba(10, 0, 20, 0.9); color: #fff;
+      font-size: 1.2rem; cursor: pointer; transition: background 0.25s, box-shadow 0.25s;
+    }
+    .fechar-livro:hover { background: var(--roxo); box-shadow: var(--brilho); }
+
+    @media (max-width: 700px) {
+      .estante { padding: 22px 8px 0; }
+      .prateleira { gap: 3px; min-height: 200px; padding: 0; }
+      .prateleira::after { left: -8px; right: -8px; }
+      .livro { width: calc(var(--larg, 62px) * 0.72); height: calc(var(--alt, 220px) * 0.8); }
+      .livro .lombada { font-size: 0.7rem; letter-spacing: 2px; }
+      .livro .ano { font-size: 0.6rem; padding: 2px 3px; }
+      .vela { display: none; }
+      /* celular: uma página por vez, sem a dobra do meio */
+      .livro-aberto { --gap: 48px; padding: 10px; }
+      .paginas { background: linear-gradient(90deg, #e9dcbd, #f5ebd3 10%, #f5ebd3 90%, #e9dcbd); }
+      .recorte { inset: 34px 24px 52px; }
+      .fluxo { column-count: 1; font-size: 1rem; }
+      .num-pag.esq { left: 50%; }
+      .num-pag.dir { display: none; }
+      .folha { display: none; }
+      .virar { top: auto; bottom: 8px; margin-top: 0; width: 40px; height: 40px; }
+      .virar.ant { left: 12px; }
+      .virar.prox { right: 12px; }
+      .fechar-livro { top: -12px; right: -6px; }
     }
   </style>
 </head>
 <body>
   <main class="container">
     <h1 class="titulo">A Lore do Pepino</h1>
+    <p class="dica-estante" id="dica-estante">Escolha um livro da estante pra ler o capítulo.</p>
 
-    <details class="cartao capitulo">
-      <summary>Capítulo I</summary>
-      <div class="texto">
-      <p>Quando tudo era mato, felipe criou um ts para jogar com seus amigos, mas ninguem quis usar, e usaram o skype, nessa era, apenas jogavam minecraft, em 2015 uma portuguesa e uma esquisita deram "tp" para o felipe no servidor InstaMC enquanto faziam uma cidade junto com o gi, felipe aceito o tp, elas entratram em call e viraram amigos, apos isso (alguns anos) se afastaram por um tempo.</p>
+    <!-- ESTANTE: cada <button class="livro"> é um capítulo.
+         --cor = cor do livro, --alt = altura, --larg = largura, --giro = inclinação.
+         O texto de cada capítulo fica nos <template> lá embaixo. -->
+    <div class="estante">
+      <!-- easter egg: clicar nas velas apaga/acende e o site escurece -->
+      <button class="vela esq" type="button" aria-label="Vela" aria-pressed="false"></button>
+      <button class="vela dir" type="button" aria-label="Vela" aria-pressed="false"></button>
+      <div class="prateleira">
+        <button class="livro" data-cap="1" style="--cor:#a020f0; --alt:226px; --larg:64px;"><span class="lombada">Capítulo I</span><span class="ano">2015</span></button>
+        <button class="livro" data-cap="2" style="--cor:#2bd9ff; --alt:204px; --larg:58px;"><span class="lombada">Capítulo II</span><span class="ano">2018</span></button>
+        <button class="livro" data-cap="3" style="--cor:#ff2bd6; --alt:236px; --larg:68px;"><span class="lombada">Capítulo III</span><span class="ano">2020</span></button>
+        <button class="livro" data-cap="4" style="--cor:#8dff6a; --alt:214px; --larg:72px;"><span class="lombada">Capítulo IV</span><span class="ano">2021</span></button>
+        <button class="livro" data-cap="5" style="--cor:#ffb02e; --alt:230px; --larg:66px;"><span class="lombada">Capítulo V</span><span class="ano">2021</span></button>
+        <button class="livro trancado" style="--cor:#6b5a80; --alt:196px; --larg:54px; --giro:6deg;" title="Em breve..."><span class="lombada">Em breve</span><span class="ano">🔒</span></button>
+      </div>
+      <div class="estante-base"></div>
     </div>
-    </details>
-
-    <details class="cartao capitulo">
-      <summary>Capítulo II</summary>
-      <div class="texto">
-      <p>E entao felipe e leo comecaram a jogar pelo xbox com o vitao e luiz, assim deixando de lado o discord por um breve momento. Apos esse breve momento comecaram a usar o pc para de comunicar no discord mas jogando pelo xbox.</p>
-    </div>
-    </details>
-
-    <details class="cartao capitulo">
-      <summary>Capítulo III</summary>
-      <div class="texto">
-      <p>Na pandemia foi oficializado o servidor Salame, liderado por felipe somente (guarde essa informacao), na epoca os principais membros eram, felipe, breno, leo, luiz, maria e gi e gabi posteriormente retornou. O ponto alto dessa era foi o servidor que foi realizado no minecraft de lojinhas e sobrevivencia.</p>
-    </div>
-    </details>
-
-    <details class="cartao capitulo">
-      <summary>Capítulo IV</summary>
-      <div class="texto">
-      <p>Ainda na pandemia, tinha uma tradicao de ver filmes em call e um certo dia luiz resolveu convidar seus outros amigos para a call e ver um filme coreano de zumbi, os novos membros eram do servidor Calabresa, composto por pedro, lucas, rodrigo, daniel e bandeco e mary, no inicio foi uma adaptacao boa entre os grupos, porem ainda em servidores separados, ambos se alterando conforme as necessidades, no servidor Salame, felipe quis criar um servidor bem ativo e cheio, assim colocando bots de minigames para entreter seus amigos, com isso se iniciou os principios das dores, mary e lucas jogavam no bot de pesca, e sempre que iam jogar, bandeco resolvia jogar, assim os atrapalhando, lucas como era amigo de bandeco nao ligava, ja mary se irratava muito.</p>
-      <p>Durante tudo isso, luiz mestrava seu primeiro RPG, que luiz era o mestre e os jogadores eram, felipe, leo, breno, maria, gi e gabi (a historia desse RPG tera um pagina dedicada).</p>
-    </div>
-    </details>
-
-    <details class="cartao capitulo">
-      <summary>Capítulo V</summary>
-      <div class="texto">
-      <p>O problema com o bot de pesca se permaneceu acontecendo, mary resolveu a ignorar e não resolver para evitar um clima desconfortavel. Bandeco explanava conversas intimas que tinham com a gabi para a mary gerando um clima muito desagradavel, apos isso mary contou para a gabi sobre oque acontecia e gabi explanou prints para todos do grupo, virando uma piada tudo isso.</p>
-      <p>Em paralelo a isso acontecia outro problema com o bandeco, nas calls ele sempre pedia para todo mundo telar ele, atrapalhando as jogatinas e conversar, se intrometia nas conversar e outras situações incovenientes, assim felipe criou chats de voz invisiveis para o badenco para ele nao entrar e nao ver pois se ele via ele enchia o saco do pessoal, porem havia uma brecha, o chat de musica, ele via pelo chat de musica que o bot era adicionado em uma call e ele nao via essa call e segundo informações dos antigos amigos dele lucas e daniel que sempre o defendiam, ele tinha um discord modificado que podia ver as calls invisivel assim gerando um problema maior ainda, um certo dia quando todos estavam de saco cheio, pessoal da call e bandeco, optaram por entrar em call e conversar sobre, pois os bandeco falava que o pessoal nao era homem de falar esses problemas na cara dele, ai resolveram nessa call falar na cara dele e no final ele saiu chorando da call, apos isso ele não interagiu novamente com o pessoal da call.</p>
-      <p>Simultaneo a essa saida um menina que havia recentemente entrado na call e conversava com o bandeco sentiu pena dele e saiu junto tambem e ate hj namoram.</p>
-    </div>
-    </details>
-
-    <p class="centro" style="color: var(--texto-fraco); margin-top: 32px;">Próximos capítulos em breve...</p>
   </main>
+
+  <div class="escuridao" id="escuridao"></div>
+
+  <!-- aviso pra quem não está logado -->
+  <div class="aviso" id="aviso" aria-hidden="true">
+    <div class="aviso-caixa" role="dialog" aria-modal="true" aria-labelledby="aviso-titulo">
+      <div class="cadeado">🔒</div>
+      <h2 id="aviso-titulo">Livro lacrado</h2>
+      <p>Somente membros do Pepino podem ler a Lore na íntegra.</p>
+      <div class="acoes">
+        <a class="botao" href="area.html?voltar=lore.html">Entrar na Área de membros</a>
+        <button class="botao vazado" type="button" id="fechar-aviso">Agora não</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- janela do livro aberto -->
+  <div class="leitor" id="leitor" aria-hidden="true">
+    <article class="livro-aberto" id="livro-aberto" role="dialog" aria-modal="true" aria-label="Capítulo da Lore">
+      <button class="fechar-livro" id="fechar-livro" type="button" aria-label="Fechar">×</button>
+      <button class="virar ant" id="anterior" type="button" aria-label="Página anterior">‹</button>
+      <button class="virar prox" id="proximo" type="button" aria-label="Próxima página">›</button>
+      <div class="paginas">
+        <div class="recorte"><div class="fluxo" id="fluxo"></div></div>
+        <span class="num-pag esq" id="pag-esq">1</span>
+        <span class="num-pag dir" id="pag-dir">2</span>
+        <div class="folha" id="folha"></div>
+      </div>
+    </article>
+  </div>
+
+  <!-- ===== TEXTOS DOS CAPÍTULOS ===== -->
+  <template id="cap-1">
+    <p>Quando tudo ainda era mato, Felipe criou um servidor de TeamSpeak para jogar com os amigos, mas ninguém quis usar, e o grupo acabou ficando no Skype. Nessa época, eles jogavam apenas Minecraft.</p>
+    <p>Em 2015, uma portuguesa e uma esquisita deram "tp" no Felipe no servidor InstaMC, enquanto ele construía uma cidade junto com o Gi. Felipe aceitou o tp, as duas entraram na call e todos viraram amigos.</p>
+    <p>Alguns anos depois, acabaram se afastando por um tempo.</p>
+  </template>
+  <template id="cap-2">
+    <p>Então, Felipe e Leo começaram a jogar no Xbox com o Vitão e o Luiz, deixando o Discord de lado por um breve momento.</p>
+    <p>Pouco tempo depois, passaram a usar o PC para se comunicar pelo Discord, mas continuaram jogando pelo Xbox.</p>
+  </template>
+  <template id="cap-3">
+    <p>Durante a pandemia, foi oficializado o servidor Salame, liderado somente pelo Felipe (guarde essa informação). Na época, os principais membros eram Felipe, Breno, Leo, Luiz, Maria e Gi; a Gabi retornou um pouco depois.</p>
+    <p>O ponto alto dessa era foi o servidor de Minecraft de lojinhas e sobrevivência.</p>
+  </template>
+  <template id="cap-4">
+    <p>Ainda na pandemia, existia a tradição de assistir a filmes em call. Certo dia, Luiz resolveu convidar outros amigos para assistir a um filme coreano de zumbi. Os novos membros vinham do servidor Calabresa, formado por Pedro, Lucas, Rodrigo, Daniel, Bandeco e Mary.</p>
+    <p>No início, a adaptação entre os grupos foi boa, mas eles continuavam em servidores separados, alternando entre um e outro conforme a necessidade.</p>
+    <p>No servidor Salame, Felipe queria um servidor bem ativo e cheio, e por isso adicionou bots de minigames para entreter os amigos. Foi aí que começaram as primeiras dores de cabeça: Mary e Lucas jogavam no bot de pesca e, sempre que iam jogar, Bandeco resolvia jogar também, atrapalhando os dois. Lucas, por ser amigo do Bandeco, não ligava, mas Mary se irritava muito.</p>
+    <p>Durante tudo isso, Luiz mestrava seu primeiro RPG, com Felipe, Leo, Breno, Maria, Gi e Gabi como jogadores (a história desse RPG terá uma página dedicada).</p>
+  </template>
+  <template id="cap-5">
+    <p>O problema com o bot de pesca continuou. Mary decidiu ignorar a situação para evitar um clima desconfortável. Só que o Bandeco também expunha para a Mary conversas íntimas que tinha com a Gabi, o que deixava o clima muito desagradável. Depois disso, Mary contou à Gabi o que estava acontecendo, e a Gabi mostrou os prints para todo o grupo. No fim, tudo virou piada.</p>
+    <p>Em paralelo, havia outro problema com o Bandeco. Nas calls, ele sempre pedia para todo mundo transmitir a tela para ele, atrapalhando as jogatinas e as conversas, além de se intrometer nos assuntos e criar outras situações inconvenientes. Por isso, Felipe criou canais de voz invisíveis para o Bandeco, para que ele não visse nem entrasse, porque, quando via, enchia o saco do pessoal.</p>
+    <p>Mas havia uma brecha: o canal de música. Por ele, o Bandeco percebia quando o bot era adicionado a uma call que ele não enxergava. E, segundo Lucas e Daniel, antigos amigos dele que sempre o defendiam, ele ainda usava um Discord modificado capaz de ver as calls invisíveis, o que tornou o problema ainda maior.</p>
+    <p>Certo dia, com todo mundo de saco cheio, o pessoal e o Bandeco decidiram entrar em call para conversar, já que ele vivia dizendo que ninguém tinha coragem de falar os problemas na cara dele. Então, falaram. No fim, ele saiu chorando da call e nunca mais interagiu com o grupo.</p>
+    <p>Junto com essa saída, uma menina que tinha entrado recentemente na call e conversava com o Bandeco sentiu pena dele e saiu também. Até hoje, os dois namoram.</p>
+  </template>
+
   <script src="script.js"></script>
+  <script>
+    const livros = [...document.querySelectorAll(".livro[data-cap]")];
+    const romanos = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+    const leitor = document.getElementById("leitor");
+    const livroAberto = document.getElementById("livro-aberto");
+    const fluxo = document.getElementById("fluxo");
+    const recorte = fluxo.parentElement;
+    const folha = document.getElementById("folha");
+    let atual = 0;      // capítulo aberto
+    let vista = 0;      // qual "par de páginas" está aparecendo
+    let totalVistas = 1;
+    let ultimoFoco = null;
+
+    // quanto anda pra mostrar o próximo par de páginas
+    const passo = () => recorte.clientWidth + parseFloat(getComputedStyle(livroAberto).getPropertyValue("--gap"));
+    const porVista = () => parseInt(getComputedStyle(fluxo).columnCount) || 1;
+
+    function posicionar(animar) {
+      fluxo.style.transition = animar ? "" : "none";
+      fluxo.style.transform = `translateX(${-vista * passo()}px)`;
+      const n = porVista();
+      document.getElementById("pag-esq").textContent = vista * n + 1;
+      document.getElementById("pag-dir").textContent = vista * n + 2;
+      document.getElementById("pag-dir").style.visibility = n === 2 && vista * n + 2 > totalPaginas ? "hidden" : "";
+      document.getElementById("anterior").disabled = atual === 0 && vista === 0;
+      document.getElementById("proximo").disabled = atual === livros.length - 1 && vista === totalVistas - 1;
+    }
+    let totalPaginas = 1;
+    function medir() {
+      fluxo.style.transform = "none";
+      const colunas = Math.max(1, Math.round((fluxo.scrollWidth + parseFloat(getComputedStyle(fluxo).columnGap)) / (passo() / porVista())));
+      totalPaginas = colunas;
+      totalVistas = Math.max(1, Math.ceil(colunas / porVista()));
+      if (vista > totalVistas - 1) vista = totalVistas - 1;
+    }
+
+    function abrir(indice, irProFim) {
+      atual = indice;
+      const livro = livros[indice];
+      const cap = livro.dataset.cap;
+      livroAberto.style.setProperty("--cor", getComputedStyle(livro).getPropertyValue("--cor"));
+      fluxo.innerHTML =
+        `<header class="cabeca-cap"><small>Capítulo</small><b>${romanos[cap] || cap}</b><span>${livro.querySelector(".ano").textContent}</span><i class="enfeite">❦</i></header>` +
+        document.getElementById("cap-" + cap).innerHTML +
+        `<p class="fim">❦ Fim do Capítulo ${romanos[cap] || cap} ❦</p>`;
+      if (!leitor.classList.contains("aberto")) ultimoFoco = document.activeElement;
+      leitor.classList.add("aberto");
+      leitor.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      medir();
+      vista = irProFim ? totalVistas - 1 : 0;
+      posicionar(false);
+      document.getElementById("fechar-livro").focus();
+    }
+
+    folha.addEventListener("animationend", () => (folha.className = "folha"));
+    function virarFolha(direcao) {
+      folha.className = "folha";
+      void folha.offsetWidth;
+      folha.classList.add(direcao);
+    }
+    function proxima() {
+      if (vista < totalVistas - 1) { vista++; virarFolha("pra-frente"); posicionar(true); }
+      else if (atual < livros.length - 1) { virarFolha("pra-frente"); abrir(atual + 1); }
+    }
+    function anterior() {
+      if (vista > 0) { vista--; virarFolha("pra-tras"); posicionar(true); }
+      else if (atual > 0) { virarFolha("pra-tras"); abrir(atual - 1, true); }
+    }
+    addEventListener("resize", () => { if (leitor.classList.contains("aberto")) { medir(); posicionar(false); } });
+    function fechar() {
+      leitor.classList.remove("aberto");
+      leitor.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (ultimoFoco) ultimoFoco.focus();
+    }
+
+    // easter egg das velas
+    const velas = [...document.querySelectorAll(".vela")];
+    const escuridao = document.getElementById("escuridao");
+    velas.forEach((vela) => {
+      vela.addEventListener("click", () => {
+        const apagar = !vela.classList.contains("apagada");
+        vela.classList.toggle("apagada", apagar);
+        vela.setAttribute("aria-pressed", String(apagar));
+        if (apagar) {
+          ["", "f2", "f3"].forEach((c) => {
+            const f = document.createElement("span");
+            f.className = "fumaca " + c;
+            f.addEventListener("animationend", () => f.remove());
+            vela.append(f);
+          });
+        }
+        const apagadas = velas.filter((v) => v.classList.contains("apagada")).length;
+        escuridao.classList.toggle("meia", apagadas === 1);
+        escuridao.classList.toggle("total", apagadas >= 2);
+      });
+    });
+
+    // só quem está logado na Área de membros abre os livros
+    const aviso = document.getElementById("aviso");
+    function mostrarAviso() {
+      ultimoFoco = document.activeElement;
+      aviso.classList.add("aberto");
+      aviso.setAttribute("aria-hidden", "false");
+      aviso.querySelector(".botao").focus();
+    }
+    function fecharAviso() {
+      aviso.classList.remove("aberto");
+      aviso.setAttribute("aria-hidden", "true");
+      if (ultimoFoco) ultimoFoco.focus();
+    }
+    document.getElementById("fechar-aviso").addEventListener("click", fecharAviso);
+    aviso.addEventListener("click", (e) => { if (e.target === aviso) fecharAviso(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && aviso.classList.contains("aberto")) fecharAviso(); });
+    if (!usuarioLogado()) {
+      document.getElementById("dica-estante").innerHTML =
+        '🔒 Os livros são lacrados. <a href="area.html?voltar=lore.html">Entre na Área de membros</a> pra ler.';
+    }
+
+    livros.forEach((livro, i) => livro.addEventListener("click", () => (usuarioLogado() ? abrir(i) : mostrarAviso())));
+    document.querySelectorAll(".livro.trancado").forEach((l) =>
+      l.addEventListener("click", () => { l.classList.remove("balanca"); void l.offsetWidth; l.classList.add("balanca"); })
+    );
+    document.getElementById("fechar-livro").addEventListener("click", fechar);
+    document.getElementById("anterior").addEventListener("click", anterior);
+    document.getElementById("proximo").addEventListener("click", proxima);
+    leitor.addEventListener("click", (e) => { if (e.target === leitor) fechar(); });
+    document.addEventListener("keydown", (e) => {
+      if (!leitor.classList.contains("aberto")) return;
+      if (e.key === "Escape") fechar();
+      if (e.key === "ArrowRight") proxima();
+      if (e.key === "ArrowLeft") anterior();
+    });
+  </script>
 </body>
 </html>

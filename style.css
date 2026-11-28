@@ -66,9 +66,7 @@ body::before {
   align-items: center;
   gap: 16px;
   padding: 0 16px;
-  background: rgba(5, 0, 8, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(7, 1, 12, 0.94); /* sem desfoque: pesava na placa de vídeo */
   border-bottom: 1px solid var(--borda);
 }
 
@@ -141,9 +139,7 @@ body::before {
   gap: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: rgba(8, 2, 14, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(8, 2, 14, 0.95);
   border-right: 1px solid var(--borda);
   transition: width 0.3s, transform 0.3s;
 }
@@ -283,12 +279,11 @@ main { flex: 1; width: 100%; }
 }
 
 .cartao {
-  background: rgba(13, 4, 22, 0.75);
+  background: rgba(13, 4, 22, 0.85); /* sem desfoque: pesava na placa de vídeo */
   border: 1px solid var(--borda);
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 20px;
-  backdrop-filter: blur(4px);
   transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
 }
 .cartao:hover { border-color: var(--roxo-claro); box-shadow: 0 0 24px rgba(160, 32, 240, 0.25); }
